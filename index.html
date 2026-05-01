@@ -23,7 +23,7 @@
   </div>
 
   <!-- MAIN APP -->
-  <div id="appScreen" style="display:none;">
+  <div id="appScreen">
     <div class="container">
       <div class="page-header">
         <h1>Бюджет</h1>
@@ -146,13 +146,28 @@
     let currentUser = null;
 
     function checkSession() {
-      const session = localStorage.getItem('budget_session');
-      if (session) {
-        const users = getUsers();
-        if (users[session]) { currentUser = { phone: session, isAdmin: users[session].isAdmin }; initApp(); return; }
+      try {
+        const session = localStorage.getItem('budget_session');
+        const users = JSON.parse(localStorage.getItem('budget_users') || '{}');
+        const loginScreen = document.getElementById('loginScreen');
+        const appScreen = document.getElementById('appScreen');
+        
+        if (session && users[session]) {
+          currentUser = { phone: session, isAdmin: users[session].isAdmin };
+          loginScreen.style.display = 'none';
+          appScreen.style.display = 'block';
+          initApp();
+        } else {
+          loginScreen.style.display = 'flex';
+          appScreen.style.display = 'none';
+          localStorage.removeItem('budget_session');
+        }
+      } catch (e) {
+        console.error('Session error:', e);
+        localStorage.removeItem('budget_session');
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('appScreen').style.display = 'none';
       }
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('appScreen').style.display = 'none';
     }
 
     function handleLogin() {
