@@ -14,6 +14,7 @@
         <button class="tab-btn active" onclick="switchTab('calculator')">Калькулятор</button>
         <button class="tab-btn" onclick="switchTab('reports')">Отчёты</button>
         <button class="tab-btn" onclick="switchTab('debts')">Долги</button>
+        <button class="tab-btn" onclick="switchTab('projects')">Проекты</button>
       </div>
     </div>
 
@@ -132,22 +133,30 @@
         </div>
       </div>
     </div>
+
+    <div class="page" id="page-projects">
+      <div class="card card-reports">
+        <div class="debts-header">
+          <div class="debts-title">Проекты</div>
+          <button class="add-btn btn-primary btn-sm" onclick="openProjectModal()">Создать проект</button>
+        </div>
+        <div id="projectsList">
+          <div class="empty-state">Нет проектов</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="modal-overlay" id="ocrModal">
     <div class="modal">
       <div class="modal-title">Распознать чек</div>
       <div class="modal-subtitle" id="ocrStatus">Обработка...</div>
-
       <img class="ocr-preview" id="ocrPreview">
-
       <div class="ocr-progress" id="ocrProgress">
         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         <div class="progress-text" id="progressText">0%</div>
       </div>
-
       <div id="reviewItems"></div>
-
       <div class="modal-actions" id="modalActions">
         <button class="btn-cancel" onclick="closeModal()">Отмена</button>
         <button class="btn-confirm" onclick="confirmReceipt()">Добавить</button>
@@ -159,35 +168,29 @@
     <div class="modal">
       <div class="modal-title">Дать в долг</div>
       <div class="modal-subtitle">Заполните данные должника</div>
-
       <div class="form-group">
         <label>Имя</label>
         <input type="text" id="debtName" placeholder="Иван Иванов">
       </div>
-
       <div class="form-group">
         <label>Телефон или номер</label>
         <input type="text" id="debtPhone" placeholder="+7 999 123-45-67">
       </div>
-
       <div class="form-group">
         <label>Сумма (₽)</label>
         <input type="number" id="debtAmount" placeholder="0" min="0" step="0.01">
       </div>
-
       <div class="form-group">
         <label>Комментарий</label>
         <input type="text" id="debtComment" placeholder="За что дали в долг">
       </div>
-
       <div class="form-group">
         <label>Дата</label>
         <input type="date" id="debtDate">
       </div>
-
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeDebtModal()">Отмена</button>
-        <button class="btn-confirm" onclick="addDebt()">Добавить</button>
+        <button class="btn-confirm" onclick="addDebt()">Создать</button>
       </div>
     </div>
   </div>
@@ -203,15 +206,109 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="projectModal">
+    <div class="modal">
+      <div class="modal-title" id="projectModalTitle">Создать проект</div>
+      <div class="modal-subtitle">Заполните данные проекта</div>
+      <div class="form-group">
+        <label>Название</label>
+        <input type="text" id="projectName" placeholder="Например: Ремонт квартиры">
+      </div>
+      <div class="form-group">
+        <label>Описание</label>
+        <input type="text" id="projectDesc" placeholder="Краткое описание">
+      </div>
+      <div class="form-group">
+        <label>Бюджет (₽)</label>
+        <input type="number" id="projectBudget" placeholder="0" min="0" step="0.01">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeProjectModal()">Отмена</button>
+        <button class="btn-confirm" onclick="saveProject()">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="subgroupModal">
+    <div class="modal">
+      <div class="modal-title">Добавить подгруппу</div>
+      <div class="modal-subtitle">Например: Ремонт кухни</div>
+      <input type="hidden" id="subgroupProjectId">
+      <div class="form-group">
+        <label>Название подгруппы</label>
+        <input type="text" id="subgroupName" placeholder="Например: Ремонт кухни">
+      </div>
+      <div class="form-group">
+        <label>Бюджет подгруппы (₽)</label>
+        <input type="number" id="subgroupBudget" placeholder="0" min="0" step="0.01">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="document.getElementById('subgroupModal').classList.remove('active')">Отмена</button>
+        <button class="btn-confirm" onclick="saveSubgroup()">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="projectTransModal">
+    <div class="modal">
+      <div class="modal-title" id="projectTransTitle">Добавить запись</div>
+      <input type="hidden" id="ptProjectId">
+      <input type="hidden" id="ptSubgroupId">
+      <div class="form-group">
+        <label>Тип</label>
+        <div class="type-toggle" style="margin-bottom:0">
+          <button class="type-btn active-expense" id="ptBtnExpense" onclick="setPtType('expense')">Расход</button>
+          <button class="type-btn" id="ptBtnIncome" onclick="setPtType('income')">Доход</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Описание</label>
+        <input type="text" id="ptDesc" placeholder="На что потрачено">
+      </div>
+      <div class="form-group">
+        <label>Сумма (₽)</label>
+        <input type="number" id="ptAmount" placeholder="0" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Дата</label>
+        <input type="date" id="ptDate">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="document.getElementById('projectTransModal').classList.remove('active')">Отмена</button>
+        <button class="btn-confirm" onclick="saveProjectTrans()">Добавить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="projectDetailModal">
+    <div class="modal modal-lg">
+      <div class="debts-header">
+        <div>
+          <div class="modal-title" id="pdTitle"></div>
+          <div class="modal-subtitle" id="pdSubtitle"></div>
+        </div>
+        <button class="btn-close-modal" onclick="document.getElementById('projectDetailModal').classList.remove('active')">✕</button>
+      </div>
+      <div class="project-summary-grid" id="pdSummary"></div>
+      <div id="pdSubgroups"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="document.getElementById('projectDetailModal').classList.remove('active')">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script>
     let currentType = 'expense';
     let transactions = JSON.parse(localStorage.getItem('budget_transactions') || '[]');
     let customCategories = JSON.parse(localStorage.getItem('budget_categories') || '{}');
     let debts = JSON.parse(localStorage.getItem('budget_debts') || '[]');
+    let projects = JSON.parse(localStorage.getItem('budget_projects') || '[]');
 
     document.getElementById('date').valueAsDate = new Date();
     document.getElementById('debtDate').valueAsDate = new Date();
+
+    function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 
     function getDefaultCats(type) {
       return type === 'expense'
@@ -249,9 +346,7 @@
     function toggleCategoryInput() {
       const wrap = document.getElementById('categoryInputWrap');
       wrap.classList.toggle('visible');
-      if (wrap.classList.contains('visible')) {
-        document.getElementById('newCategoryInput').focus();
-      }
+      if (wrap.classList.contains('visible')) document.getElementById('newCategoryInput').focus();
     }
 
     function hideCategoryInput() {
@@ -260,25 +355,18 @@
     }
 
     function addCategory() {
-      const input = document.getElementById('newCategoryInput');
-      const name = input.value.trim();
+      const name = document.getElementById('newCategoryInput').value.trim();
       if (!name) return;
-
-      const allCats = getAllCats(currentType);
-      if (allCats.includes(name)) return;
-
+      if (getAllCats(currentType).includes(name)) return;
       if (!customCategories[currentType]) customCategories[currentType] = [];
       customCategories[currentType].push(name);
       localStorage.setItem('budget_categories', JSON.stringify(customCategories));
-
       populateCategories();
       document.getElementById('category').value = name;
       hideCategoryInput();
     }
 
-    document.getElementById('newCategoryInput').addEventListener('keydown', e => {
-      if (e.key === 'Enter') addCategory();
-    });
+    document.getElementById('newCategoryInput').addEventListener('keydown', e => { if (e.key === 'Enter') addCategory(); });
 
     function switchTab(tab) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -287,6 +375,7 @@
       if (event && event.target) event.target.classList.add('active');
       if (tab === 'reports') renderReports();
       if (tab === 'debts') renderDebts();
+      if (tab === 'projects') renderProjects();
     }
 
     function renderReports() {
@@ -295,23 +384,13 @@
       const now = new Date();
       const defaultYear = now.getFullYear();
       const defaultMonth = String(now.getMonth() + 1).padStart(2, '0');
-
       if (!document.getElementById('reportYear').value) document.getElementById('reportYear').value = defaultYear;
       if (!document.getElementById('reportMonth').value) document.getElementById('reportMonth').value = `${defaultYear}-${defaultMonth}`;
-
       const selectedYear = parseInt(document.getElementById('reportYear').value);
       const selectedMonth = document.getElementById('reportMonth').value;
-
       let filtered = [...transactions];
-
-      if (period === 'years') {
-        filtered = filtered.filter(t => {
-          const y = new Date(t.date).getFullYear();
-          return y === selectedYear;
-        });
-      } else if (period === 'months') {
-        filtered = filtered.filter(t => t.date && t.date.startsWith(selectedMonth));
-      }
+      if (period === 'years') filtered = filtered.filter(t => new Date(t.date).getFullYear() === selectedYear);
+      else if (period === 'months') filtered = filtered.filter(t => t.date && t.date.startsWith(selectedMonth));
 
       const grouped = {};
       filtered.forEach(t => {
@@ -319,218 +398,84 @@
         if (period === 'days') key = t.date;
         else if (period === 'months') key = t.date ? t.date.slice(0, 7) : '';
         else key = t.date ? new Date(t.date).getFullYear().toString() : '';
-
         if (!grouped[key]) grouped[key] = { income: 0, expense: 0 };
         if (t.type === 'income') grouped[key].income += t.amount;
         else grouped[key].expense += t.amount;
       });
 
       const keys = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+      if (keys.length === 0) { container.innerHTML = '<div class="empty-state">Нет данных за выбранный период</div>'; return; }
 
-      if (keys.length === 0) {
-        container.innerHTML = '<div class="empty-state">Нет данных за выбранный период</div>';
-        return;
-      }
-
-      let totalInc = 0, totalExp = 0;
-      let rows = '';
+      let totalInc = 0, totalExp = 0, rows = '';
       keys.forEach(k => {
-        const d = grouped[k];
-        const bal = d.income - d.expense;
-        totalInc += d.income;
-        totalExp += d.expense;
-
+        const d = grouped[k], bal = d.income - d.expense;
+        totalInc += d.income; totalExp += d.expense;
         let label;
-        if (period === 'days') {
-          label = new Date(k + 'T00:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-        } else if (period === 'months') {
-          const [y, m] = k.split('-');
-          label = new Date(y, m - 1).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
-        } else {
-          label = k;
-        }
-
-        const balClass = bal >= 0 ? 'stat-balance-pos' : 'stat-balance-neg';
-        rows += `<tr>
-          <td>${label}</td>
-          <td class="stat-income">${formatMoney(d.income)}</td>
-          <td class="stat-expense">${formatMoney(d.expense)}</td>
-          <td class="${balClass}">${bal >= 0 ? '+' : ''}${formatMoney(bal)}</td>
-        </tr>`;
+        if (period === 'days') label = new Date(k + 'T00:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        else if (period === 'months') { const [y, m] = k.split('-'); label = new Date(y, m - 1).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }); }
+        else label = k;
+        rows += `<tr><td>${label}</td><td class="stat-income">${formatMoney(d.income)}</td><td class="stat-expense">${formatMoney(d.expense)}</td><td class="${bal >= 0 ? 'stat-balance-pos' : 'stat-balance-neg'}">${bal >= 0 ? '+' : ''}${formatMoney(bal)}</td></tr>`;
       });
 
       const totalBal = totalInc - totalExp;
-      const totalBalClass = totalBal >= 0 ? 'stat-balance-pos' : 'stat-balance-neg';
-      const avgIncome = totalInc / keys.length;
-      const avgExpense = totalExp / keys.length;
-
-      container.innerHTML = `
-        <table class="stat-table">
-          <thead>
-            <tr>
-              <th>Период</th>
-              <th>Доходы</th>
-              <th>Расходы</th>
-              <th>Баланс</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows}
-            <tr class="stat-total">
-              <td>Итого</td>
-              <td class="stat-income">${formatMoney(totalInc)}</td>
-              <td class="stat-expense">${formatMoney(totalExp)}</td>
-              <td class="${totalBalClass}">${totalBal >= 0 ? '+' : ''}${formatMoney(totalBal)}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="stat-summary">
-          <span>Средний доход: <b class="clr-income">${formatMoney(avgIncome)}</b></span>
-          <span>Средний расход: <b class="clr-expense">${formatMoney(avgExpense)}</b></span>
-          <span>Периодов: <b>${keys.length}</b></span>
-        </div>
-      `;
+      container.innerHTML = `<table class="stat-table"><thead><tr><th>Период</th><th>Доходы</th><th>Расходы</th><th>Баланс</th></tr></thead><tbody>${rows}<tr class="stat-total"><td>Итого</td><td class="stat-income">${formatMoney(totalInc)}</td><td class="stat-expense">${formatMoney(totalExp)}</td><td class="${totalBal >= 0 ? 'stat-balance-pos' : 'stat-balance-neg'}">${totalBal >= 0 ? '+' : ''}${formatMoney(totalBal)}</td></tr></tbody></table><div class="stat-summary"><span>Средний доход: <b class="clr-income">${formatMoney(totalInc / keys.length)}</b></span><span>Средний расход: <b class="clr-expense">${formatMoney(totalExp / keys.length)}</b></span><span>Периодов: <b>${keys.length}</b></span></div>`;
     }
 
-    function formatMoney(n) {
-      return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', minimumFractionDigits: 0 }).format(n);
-    }
+    function formatMoney(n) { return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', minimumFractionDigits: 0 }).format(n); }
 
     function addTransaction() {
       const desc = document.getElementById('desc').value.trim();
       const amount = parseFloat(document.getElementById('amount').value);
       const category = document.getElementById('category').value;
       const date = document.getElementById('date').value;
-
       if (!desc || !amount || amount <= 0) return;
-
       transactions.unshift({ id: Date.now(), type: currentType, desc, amount, category, date });
-      save();
-      render();
-
+      save(); render();
       document.getElementById('desc').value = '';
       document.getElementById('amount').value = '';
     }
 
-    function deleteTransaction(id) {
-      transactions = transactions.filter(t => t.id !== id);
-      save();
-      render();
-    }
-
-    function save() {
-      localStorage.setItem('budget_transactions', JSON.stringify(transactions));
-    }
-
-    function saveDebts() {
-      localStorage.setItem('budget_debts', JSON.stringify(debts));
-    }
+    function deleteTransaction(id) { transactions = transactions.filter(t => t.id !== id); save(); render(); }
+    function save() { localStorage.setItem('budget_transactions', JSON.stringify(transactions)); }
 
     function render() {
       let income = 0, expense = 0;
-      transactions.forEach(t => {
-        if (t.type === 'income') income += t.amount;
-        else expense += t.amount;
-      });
-
+      transactions.forEach(t => { if (t.type === 'income') income += t.amount; else expense += t.amount; });
       document.getElementById('totalIncome').textContent = formatMoney(income);
       document.getElementById('totalExpense').textContent = formatMoney(expense);
       document.getElementById('balance').textContent = formatMoney(income - expense);
 
       const list = document.getElementById('transactionsList');
-      if (transactions.length === 0) {
-        list.innerHTML = '<div class="empty-state">Нет записей. Добавьте первую!</div>';
-      } else {
-        list.innerHTML = transactions.map(t => `
-          <div class="transaction-item">
-            <div class="transaction-info">
-              <div class="transaction-desc">${t.desc}</div>
-              <div class="transaction-meta">${t.category} · ${new Date(t.date).toLocaleDateString('ru-RU')}</div>
-            </div>
-            <div class="transaction-amount ${t.type}">${t.type === 'income' ? '+' : '−'}${formatMoney(t.amount)}</div>
-            <button class="delete-btn" onclick="deleteTransaction(${t.id})">✕</button>
-          </div>
-        `).join('');
-      }
+      if (transactions.length === 0) { list.innerHTML = '<div class="empty-state">Нет записей. Добавьте первую!</div>'; }
+      else { list.innerHTML = transactions.map(t => `<div class="transaction-item"><div class="transaction-info"><div class="transaction-desc">${t.desc}</div><div class="transaction-meta">${t.category} · ${new Date(t.date).toLocaleDateString('ru-RU')}</div></div><div class="transaction-amount ${t.type}">${t.type === 'income' ? '+' : '−'}${formatMoney(t.amount)}</div><button class="delete-btn" onclick="deleteTransaction(${t.id})">✕</button></div>`).join(''); }
 
       const expensesByCategory = {};
-      transactions.filter(t => t.type === 'expense').forEach(t => {
-        expensesByCategory[t.category] = (expensesByCategory[t.category] || 0) + t.amount;
-      });
-
+      transactions.filter(t => t.type === 'expense').forEach(t => { expensesByCategory[t.category] = (expensesByCategory[t.category] || 0) + t.amount; });
       const chart = document.getElementById('chartBars');
       const cats = Object.entries(expensesByCategory).sort((a, b) => b[1] - a[1]);
-      if (cats.length === 0) {
-        chart.innerHTML = '<div class="empty-state">Нет данных</div>';
-      } else {
+      if (cats.length === 0) { chart.innerHTML = '<div class="empty-state">Нет данных</div>'; }
+      else {
         const max = cats[0][1];
         const colors = ['#c42b1c', '#ca5026', '#e6a101', '#0f7b3f', '#005fb4', '#5b52cd', '#8764b8'];
-        chart.innerHTML = cats.map(([cat, val], i) => `
-          <div class="chart-bar-row">
-            <div class="chart-bar-label">${cat}</div>
-            <div class="chart-bar-track">
-              <div class="chart-bar-fill" style="width: ${(val / max) * 100}%; background: ${colors[i % colors.length]};"></div>
-            </div>
-            <div class="chart-bar-value">${formatMoney(val)}</div>
-          </div>
-        `).join('');
+        chart.innerHTML = cats.map(([cat, val], i) => `<div class="chart-bar-row"><div class="chart-bar-label">${cat}</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width: ${(val / max) * 100}%; background: ${colors[i % colors.length]};"></div></div><div class="chart-bar-value">${formatMoney(val)}</div></div>`).join('');
       }
     }
 
+    function saveDebts() { localStorage.setItem('budget_debts', JSON.stringify(debts)); }
+
     function renderDebts() {
-      const container = document.getElementById('debtsList');
       const activeDebts = debts.filter(d => d.remaining > 0);
-
-      let totalRemaining = 0;
-      activeDebts.forEach(d => totalRemaining += d.remaining);
-      document.getElementById('debtsTotal').textContent = formatMoney(totalRemaining);
-
-      if (activeDebts.length === 0) {
-        container.innerHTML = '<div class="empty-state">Нет долгов</div>';
-        return;
-      }
-
+      document.getElementById('debtsTotal').textContent = formatMoney(activeDebts.reduce((s, d) => s + d.remaining, 0));
+      const container = document.getElementById('debtsList');
+      if (activeDebts.length === 0) { container.innerHTML = '<div class="empty-state">Нет долгов</div>'; return; }
       container.innerHTML = activeDebts.map(d => {
-        const paidPercent = ((d.amount - d.remaining) / d.amount) * 100;
-        return `
-          <div class="debt-card">
-            <div class="debt-header">
-              <div class="debt-person">
-                <div class="debt-name">${d.name}</div>
-                <div class="debt-contact">${d.phone || 'Нет телефона'}</div>
-              </div>
-              <div class="debt-amount">${formatMoney(d.remaining)}</div>
-            </div>
-            ${d.comment ? `<div class="debt-comment">${d.comment}</div>` : ''}
-            <div class="debt-progress">
-              <div class="debt-progress-bar">
-                <div class="debt-progress-fill" style="width: ${paidPercent}%"></div>
-              </div>
-              <div class="debt-progress-text">${paidPercent.toFixed(0)}% выплачено</div>
-            </div>
-            <div class="debt-actions">
-              <button class="btn-pay" onclick="repayDebt('${d.id}')">Выплатил</button>
-              <button class="btn-history" onclick="showDebtHistory('${d.id}')">История</button>
-              <button class="btn-delete-debt" onclick="deleteDebt('${d.id}')">Удалить</button>
-            </div>
-            <div class="debt-date">Создан: ${new Date(d.date).toLocaleDateString('ru-RU')}</div>
-          </div>
-        `;
+        const pct = ((d.amount - d.remaining) / d.amount) * 100;
+        return `<div class="debt-card"><div class="debt-header"><div class="debt-person"><div class="debt-name">${d.name}</div><div class="debt-contact">${d.phone || 'Нет телефона'}</div></div><div class="debt-amount">${formatMoney(d.remaining)}</div></div>${d.comment ? `<div class="debt-comment">${d.comment}</div>` : ''}<div class="debt-progress"><div class="debt-progress-bar"><div class="debt-progress-fill" style="width: ${pct}%"></div></div><div class="debt-progress-text">${pct.toFixed(0)}% выплачено</div></div><div class="debt-actions"><button class="btn-pay" onclick="repayDebt('${d.id}')">Выплатил</button><button class="btn-history" onclick="showDebtHistory('${d.id}')">История</button><button class="btn-delete-debt" onclick="deleteDebt('${d.id}')">Удалить</button></div><div class="debt-date">Создан: ${new Date(d.date).toLocaleDateString('ru-RU')}</div></div>`;
       }).join('');
     }
 
-    function openDebtModal() {
-      document.getElementById('debtName').value = '';
-      document.getElementById('debtPhone').value = '';
-      document.getElementById('debtAmount').value = '';
-      document.getElementById('debtComment').value = '';
-      document.getElementById('debtDate').valueAsDate = new Date();
-      document.getElementById('debtModal').classList.add('active');
-    }
-
-    function closeDebtModal() {
-      document.getElementById('debtModal').classList.remove('active');
-    }
+    function openDebtModal() { ['debtName', 'debtPhone', 'debtAmount', 'debtComment'].forEach(id => document.getElementById(id).value = ''); document.getElementById('debtDate').valueAsDate = new Date(); document.getElementById('debtModal').classList.add('active'); }
+    function closeDebtModal() { document.getElementById('debtModal').classList.remove('active'); }
 
     function addDebt() {
       const name = document.getElementById('debtName').value.trim();
@@ -538,124 +483,241 @@
       const amount = parseFloat(document.getElementById('debtAmount').value);
       const comment = document.getElementById('debtComment').value.trim();
       const date = document.getElementById('debtDate').value;
-
       if (!name || !amount || amount <= 0) return;
-
-      debts.push({
-        id: Date.now().toString(),
-        name,
-        phone,
-        amount,
-        remaining: amount,
-        comment,
-        date,
-        payments: []
-      });
-
-      saveDebts();
-      renderDebts();
-      closeDebtModal();
+      debts.push({ id: genId(), name, phone, amount, remaining: amount, comment, date, payments: [] });
+      saveDebts(); renderDebts(); closeDebtModal();
     }
 
     function repayDebt(id) {
       const debt = debts.find(d => d.id === id);
-      if (!debt || debt.remaining <= 0) return;
-
+      if (!debt) return;
       const amountStr = prompt(`Сумма выплаты (остаток: ${formatMoney(debt.remaining)})`, debt.remaining);
       if (!amountStr) return;
-
-      const amount = parseFloat(amountStr);
-      if (!amount || amount <= 0) return;
-
-      const actualAmount = Math.min(amount, debt.remaining);
-
-      debt.remaining -= actualAmount;
-      debt.payments.push({
-        id: Date.now(),
-        amount: actualAmount,
-        date: new Date().toISOString().split('T')[0]
-      });
-
-      transactions.unshift({
-        id: Date.now(),
-        type: 'income',
-        desc: `Возврат долга от ${debt.name}`,
-        amount: actualAmount,
-        category: 'Долги',
-        date: new Date().toISOString().split('T')[0]
-      });
-
-      saveDebts();
-      save();
-      render();
-      renderDebts();
+      const amount = Math.min(parseFloat(amountStr) || 0, debt.remaining);
+      if (amount <= 0) return;
+      debt.remaining -= amount;
+      debt.payments.push({ id: Date.now(), amount, date: new Date().toISOString().split('T')[0] });
+      transactions.unshift({ id: Date.now(), type: 'income', desc: `Возврат долга от ${debt.name}`, amount, category: 'Долги', date: new Date().toISOString().split('T')[0] });
+      saveDebts(); save(); render(); renderDebts();
     }
 
-    function deleteDebt(id) {
-      if (!confirm('Удалить этот долг?')) return;
-      debts = debts.filter(d => d.id !== id);
-      saveDebts();
-      renderDebts();
-    }
+    function deleteDebt(id) { if (!confirm('Удалить этот долг?')) return; debts = debts.filter(d => d.id !== id); saveDebts(); renderDebts(); }
 
     function showDebtHistory(id) {
       const debt = debts.find(d => d.id === id);
       if (!debt) return;
-
       document.getElementById('debtHistoryTitle').textContent = debt.name;
       document.getElementById('debtHistorySubtitle').textContent = `Всего: ${formatMoney(debt.amount)} · Остаток: ${formatMoney(debt.remaining)}`;
-
-      const container = document.getElementById('debtHistoryContent');
-      if (debt.payments.length === 0) {
-        container.innerHTML = '<div class="empty-state">Выплат ещё не было</div>';
-      } else {
-        container.innerHTML = `
-          <table class="stat-table">
-            <thead>
-              <tr>
-                <th>Дата</th>
-                <th>Сумма</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${debt.payments.map(p => `
-                <tr>
-                  <td>${new Date(p.date).toLocaleDateString('ru-RU')}</td>
-                  <td class="stat-income">+${formatMoney(p.amount)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        `;
-      }
-
+      const c = document.getElementById('debtHistoryContent');
+      if (debt.payments.length === 0) c.innerHTML = '<div class="empty-state">Выплат ещё не было</div>';
+      else c.innerHTML = `<table class="stat-table"><thead><tr><th>Дата</th><th>Сумма</th></tr></thead><tbody>${debt.payments.map(p => `<tr><td>${new Date(p.date).toLocaleDateString('ru-RU')}</td><td class="stat-income">+${formatMoney(p.amount)}</td></tr>`).join('')}</tbody></table>`;
       document.getElementById('debtHistoryModal').classList.add('active');
     }
+
+    // ========== PROJECTS ==========
+
+    function saveProjects() { localStorage.setItem('budget_projects', JSON.stringify(projects)); }
+
+    function getProjectStats(proj) {
+      let totalExpense = 0, totalIncome = 0;
+      proj.subgroups.forEach(sg => sg.transactions.forEach(t => { if (t.type === 'expense') totalExpense += t.amount; else totalIncome += t.amount; }));
+      return { totalExpense, totalIncome, balance: totalIncome - totalExpense };
+    }
+
+    function getSubgroupStats(sg) {
+      let expense = 0, income = 0;
+      sg.transactions.forEach(t => { if (t.type === 'expense') expense += t.amount; else income += t.amount; });
+      return { expense, income, balance: income - expense };
+    }
+
+    function renderProjects() {
+      const container = document.getElementById('projectsList');
+      if (projects.length === 0) { container.innerHTML = '<div class="empty-state">Нет проектов. Создайте первый!</div>'; return; }
+      container.innerHTML = projects.map(p => {
+        const stats = getProjectStats(p);
+        const pctUsed = p.budget > 0 ? (stats.totalExpense / p.budget * 100) : 0;
+        return `<div class="project-card" onclick="openProjectDetail('${p.id}')">
+          <div class="project-card-header">
+            <div>
+              <div class="project-card-name">${p.name}</div>
+              <div class="project-card-desc">${p.description || 'Без описания'}</div>
+            </div>
+            <div class="project-card-actions">
+              <button class="btn-delete-debt" onclick="event.stopPropagation(); deleteProject('${p.id}')">✕</button>
+            </div>
+          </div>
+          <div class="project-card-stats">
+            <div class="proj-stat"><div class="proj-stat-label">Расходы</div><div class="proj-stat-value clr-expense">${formatMoney(stats.totalExpense)}</div></div>
+            <div class="proj-stat"><div class="proj-stat-label">Доходы</div><div class="proj-stat-value clr-income">${formatMoney(stats.totalIncome)}</div></div>
+            <div class="proj-stat"><div class="proj-stat-label">Баланс</div><div class="proj-stat-value ${stats.balance >= 0 ? 'clr-income' : 'clr-expense'}">${stats.balance >= 0 ? '+' : ''}${formatMoney(stats.balance)}</div></div>
+            ${p.budget > 0 ? `<div class="proj-stat"><div class="proj-stat-label">Бюджет</div><div class="proj-stat-value">${formatMoney(p.budget)}</div></div>` : ''}
+          </div>
+          ${p.budget > 0 ? `<div class="debt-progress"><div class="debt-progress-bar"><div class="debt-progress-fill ${pctUsed > 100 ? 'clr-expense' : ''}" style="width: ${Math.min(pctUsed, 100)}%"></div></div><div class="debt-progress-text">${pctUsed.toFixed(0)}% бюджета использовано</div></div>` : ''}
+          <div class="project-card-meta">${p.subgroups.length} подгрупп(ы) · Создан: ${new Date(p.createdAt).toLocaleDateString('ru-RU')}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function openProjectModal(editId) {
+      const m = document.getElementById('projectModal');
+      document.getElementById('projectModalTitle').textContent = editId ? 'Редактировать проект' : 'Создать проект';
+      document.getElementById('projectName').value = '';
+      document.getElementById('projectDesc').value = '';
+      document.getElementById('projectBudget').value = '';
+      m.classList.add('active');
+    }
+
+    function closeProjectModal() { document.getElementById('projectModal').classList.remove('active'); }
+
+    function saveProject() {
+      const name = document.getElementById('projectName').value.trim();
+      const desc = document.getElementById('projectDesc').value.trim();
+      const budget = parseFloat(document.getElementById('projectBudget').value) || 0;
+      if (!name) return;
+      projects.push({ id: genId(), name, description: desc, budget, subgroups: [], createdAt: new Date().toISOString() });
+      saveProjects(); renderProjects(); closeProjectModal();
+    }
+
+    function deleteProject(id) {
+      if (!confirm('Удалить проект и все его данные?')) return;
+      projects = projects.filter(p => p.id !== id);
+      saveProjects(); renderProjects();
+    }
+
+    function openSubgroupModal(projId) {
+      document.getElementById('subgroupProjectId').value = projId;
+      document.getElementById('subgroupName').value = '';
+      document.getElementById('subgroupBudget').value = '';
+      document.getElementById('subgroupModal').classList.add('active');
+    }
+
+    function saveSubgroup() {
+      const projId = document.getElementById('subgroupProjectId').value;
+      const name = document.getElementById('subgroupName').value.trim();
+      const budget = parseFloat(document.getElementById('subgroupBudget').value) || 0;
+      if (!name) return;
+      const proj = projects.find(p => p.id === projId);
+      if (!proj) return;
+      proj.subgroups.push({ id: genId(), name, budget, transactions: [] });
+      saveProjects();
+      document.getElementById('subgroupModal').classList.remove('active');
+      openProjectDetail(projId);
+    }
+
+    function deleteSubgroup(projId, sgId) {
+      if (!confirm('Удалить подгруппу и все записи?')) return;
+      const proj = projects.find(p => p.id === projId);
+      if (!proj) return;
+      proj.subgroups = proj.subgroups.filter(sg => sg.id !== sgId);
+      saveProjects(); openProjectDetail(projId);
+    }
+
+    let ptType = 'expense';
+    function setPtType(type) {
+      ptType = type;
+      document.getElementById('ptBtnExpense').className = 'type-btn' + (type === 'expense' ? ' active-expense' : '');
+      document.getElementById('ptBtnIncome').className = 'type-btn' + (type === 'income' ? ' active-income' : '');
+    }
+
+    function openProjectTransModal(projId, sgId) {
+      document.getElementById('ptProjectId').value = projId;
+      document.getElementById('ptSubgroupId').value = sgId;
+      document.getElementById('ptDesc').value = '';
+      document.getElementById('ptAmount').value = '';
+      document.getElementById('ptDate').valueAsDate = new Date();
+      setPtType('expense');
+      document.getElementById('projectTransModal').classList.add('active');
+    }
+
+    function saveProjectTrans() {
+      const projId = document.getElementById('ptProjectId').value;
+      const sgId = document.getElementById('ptSubgroupId').value;
+      const desc = document.getElementById('ptDesc').value.trim();
+      const amount = parseFloat(document.getElementById('ptAmount').value);
+      const date = document.getElementById('ptDate').value;
+      if (!desc || !amount || amount <= 0) return;
+      const proj = projects.find(p => p.id === projId);
+      const sg = proj?.subgroups.find(s => s.id === sgId);
+      if (!sg) return;
+      sg.transactions.unshift({ id: Date.now(), type: ptType, desc, amount, date });
+      saveProjects();
+      document.getElementById('projectTransModal').classList.remove('active');
+      openProjectDetail(projId);
+    }
+
+    function deleteProjectTrans(projId, sgId, transId) {
+      const proj = projects.find(p => p.id === projId);
+      const sg = proj?.subgroups.find(s => s.id === sgId);
+      if (!sg) return;
+      sg.transactions = sg.transactions.filter(t => t.id !== transId);
+      saveProjects(); openProjectDetail(projId);
+    }
+
+    function openProjectDetail(projId) {
+      const proj = projects.find(p => p.id === projId);
+      if (!proj) return;
+      document.getElementById('pdTitle').textContent = proj.name;
+      document.getElementById('pdSubtitle').textContent = proj.description || '';
+
+      const stats = getProjectStats(proj);
+      const pctUsed = proj.budget > 0 ? (stats.totalExpense / proj.budget * 100) : 0;
+
+      document.getElementById('pdSummary').innerHTML = `
+        <div class="proj-stat"><div class="proj-stat-label">Расходы</div><div class="proj-stat-value clr-expense">${formatMoney(stats.totalExpense)}</div></div>
+        <div class="proj-stat"><div class="proj-stat-label">Доходы</div><div class="proj-stat-value clr-income">${formatMoney(stats.totalIncome)}</div></div>
+        <div class="proj-stat"><div class="proj-stat-label">Итого</div><div class="proj-stat-value ${stats.balance >= 0 ? 'clr-income' : 'clr-expense'}">${stats.balance >= 0 ? '+' : ''}${formatMoney(stats.balance)}</div></div>
+        ${proj.budget > 0 ? `<div class="proj-stat"><div class="proj-stat-label">Бюджет</div><div class="proj-stat-value">${formatMoney(proj.budget)}</div></div>` : ''}
+      `;
+
+      const sgContainer = document.getElementById('pdSubgroups');
+      if (proj.subgroups.length === 0) {
+        sgContainer.innerHTML = `<div class="empty-state" style="margin-bottom:12px">Нет подгрупп</div>
+          <button class="btn-pay" style="width:100%" onclick="openSubgroupModal('${proj.id}')">Добавить подгруппу</button>`;
+      } else {
+        sgContainer.innerHTML = `<div class="subgroup-add-row"><button class="btn-pay" onclick="openSubgroupModal('${proj.id}')">Добавить подгруппу</button></div>` + proj.subgroups.map(sg => {
+          const sgStats = getSubgroupStats(sg);
+          const sgPct = sg.budget > 0 ? (sgStats.expense / sg.budget * 100) : 0;
+          return `<div class="subgroup-card">
+            <div class="subgroup-header">
+              <div>
+                <div class="subgroup-name">${sg.name}</div>
+                <div class="subgroup-stats">Расходы: <span class="clr-expense">${formatMoney(sgStats.expense)}</span> · Доходы: <span class="clr-income">${formatMoney(sgStats.income)}</span> · ${sgStats.balance >= 0 ? '+' : ''}${formatMoney(sgStats.balance)}</div>
+              </div>
+              <button class="btn-delete-debt" onclick="deleteSubgroup('${proj.id}','${sg.id}')">✕</button>
+            </div>
+            ${sg.budget > 0 ? `<div class="debt-progress" style="margin:8px 0"><div class="debt-progress-bar"><div class="debt-progress-fill ${sgPct > 100 ? 'clr-expense' : ''}" style="width: ${Math.min(sgPct, 100)}%"></div></div><div class="debt-progress-text">${sgPct.toFixed(0)}% бюджета</div></div>` : ''}
+            <div class="subgroup-transactions">
+              ${sg.transactions.length === 0 ? '<div class="empty-state" style="padding:16px">Нет записей</div>' :
+                sg.transactions.map(t => `<div class="transaction-item"><div class="transaction-info"><div class="transaction-desc">${t.desc}</div><div class="transaction-meta">${new Date(t.date).toLocaleDateString('ru-RU')}</div></div><div class="transaction-amount ${t.type}">${t.type === 'income' ? '+' : '−'}${formatMoney(t.amount)}</div><button class="delete-btn" onclick="deleteProjectTrans('${proj.id}','${sg.id}',${t.id})">✕</button></div>`).join('')}
+            </div>
+            <div class="subgroup-actions">
+              <button class="btn-pay" onclick="openProjectTransModal('${proj.id}','${sg.id}')">Добавить запись</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      document.getElementById('projectDetailModal').classList.add('active');
+    }
+
+    // ========== OCR ==========
 
     let ocrExtracted = [];
 
     async function processReceipt(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const modal = document.getElementById('ocrModal');
       const preview = document.getElementById('ocrPreview');
       const progress = document.getElementById('ocrProgress');
-      const progressFill = document.getElementById('progressFill');
-      const progressText = document.getElementById('progressText');
-      const status = document.getElementById('ocrStatus');
-      const review = document.getElementById('reviewItems');
-      const actions = document.getElementById('modalActions');
-
       modal.classList.add('active');
       preview.style.display = 'none';
       progress.style.display = 'block';
-      review.innerHTML = '';
-      actions.style.display = 'none';
-      status.textContent = 'Загрузка изображения...';
-      progressFill.style.width = '0%';
-      progressText.textContent = '0%';
-
+      document.getElementById('reviewItems').innerHTML = '';
+      document.getElementById('modalActions').style.display = 'none';
+      document.getElementById('ocrStatus').textContent = 'Загрузка изображения...';
+      document.getElementById('progressFill').style.width = '0%';
+      document.getElementById('progressText').textContent = '0%';
       preview.style.display = 'block';
       preview.src = URL.createObjectURL(file);
 
@@ -664,117 +726,56 @@
           logger: m => {
             if (m.status === 'recognizing text') {
               const pct = Math.round(m.progress * 100);
-              progressFill.style.width = pct + '%';
-              progressText.textContent = pct + '%';
-              status.textContent = 'Распознавание текста...';
-            } else {
-              status.textContent = m.status || 'Обработка...';
+              document.getElementById('progressFill').style.width = pct + '%';
+              document.getElementById('progressText').textContent = pct + '%';
+              document.getElementById('ocrStatus').textContent = 'Распознавание текста...';
             }
           }
         });
-
-        const text = result.data.text;
-        ocrExtracted = parseReceipt(text);
-
-        if (ocrExtracted.length === 0) {
-          status.textContent = 'Не удалось найти суммы. Добавьте вручную.';
-          ocrExtracted = [{ desc: '', amount: '', category: 'Еда' }];
-        }
-
+        ocrExtracted = parseReceipt(result.data.text);
+        if (ocrExtracted.length === 0) { document.getElementById('ocrStatus').textContent = 'Не удалось найти суммы.'; ocrExtracted = [{ desc: '', amount: '', category: 'Еда' }]; }
         progress.style.display = 'none';
-        status.textContent = `Найдено позиций: ${ocrExtracted.length}`;
+        document.getElementById('ocrStatus').textContent = `Найдено позиций: ${ocrExtracted.length}`;
         renderReviewItems();
-        actions.style.display = 'flex';
-      } catch (err) {
-        status.textContent = 'Ошибка распознавания. Попробуйте ещё раз.';
-        progress.style.display = 'none';
-        console.error(err);
-      }
-
+        document.getElementById('modalActions').style.display = 'flex';
+      } catch (err) { document.getElementById('ocrStatus').textContent = 'Ошибка распознавания.'; progress.style.display = 'none'; }
       event.target.value = '';
     }
 
     function parseReceipt(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l);
       const items = [];
-      const amountRegex = /(\d+[\s.,]?\d{2})/g;
-
       for (const line of lines) {
-        const matches = [...line.matchAll(amountRegex)];
+        const matches = [...line.matchAll(/(\d+[\s.,]?\d{2})/g)];
         if (matches.length > 0) {
-          const amountStr = matches[matches.length - 1][0].replace(/[\s]/g, '').replace(',', '.');
-          const amount = parseFloat(amountStr);
-
+          const amount = parseFloat(matches[matches.length - 1][0].replace(/[\s]/g, '').replace(',', '.'));
           if (amount > 0 && amount < 1000000) {
-            const desc = line.replace(amountRegex, '').replace(/[₽руб.\s]+$/g, '').trim();
-            items.push({ desc: desc || 'Без описания', amount: amount, category: 'Еда' });
+            const desc = line.replace(/(\d+[\s.,]?\d{2})/g, '').replace(/[₽руб.\s]+$/g, '').trim();
+            items.push({ desc: desc || 'Без описания', amount, category: 'Еда' });
           }
         }
       }
-
       if (items.length === 0) {
-        const allAmounts = [...text.matchAll(amountRegex)];
-        for (const match of allAmounts) {
-          const amountStr = match[0].replace(/[\s]/g, '').replace(',', '.');
-          const amount = parseFloat(amountStr);
-          if (amount > 0 && amount < 1000000) {
-            items.push({ desc: 'Позиция из чека', amount: amount, category: 'Еда' });
-          }
+        for (const match of [...text.matchAll(/(\d+[\s.,]?\d{2})/g)]) {
+          const amount = parseFloat(match[0].replace(/[\s]/g, '').replace(',', '.'));
+          if (amount > 0 && amount < 1000000) items.push({ desc: 'Позиция из чека', amount, category: 'Еда' });
         }
       }
-
       return items;
     }
 
     function renderReviewItems() {
-      const container = document.getElementById('reviewItems');
-      container.innerHTML = ocrExtracted.map((item, i) => `
-        <div class="review-item">
-          <div class="review-item-header">
-            <div class="review-amount">${item.amount} ₽</div>
-            <button class="review-remove" onclick="removeReviewItem(${i})">✕</button>
-          </div>
-          <div class="review-item-row">
-            <input type="text" value="${item.desc}" placeholder="Описание" onchange="ocrExtracted[${i}].desc = this.value">
-          </div>
-          <div class="review-item-row">
-            <select onchange="ocrExtracted[${i}].category = this.value">
-              ${getAllCats('expense').map(c => `<option value="${c}" ${c === item.category ? 'selected' : ''}>${c}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-      `).join('');
+      document.getElementById('reviewItems').innerHTML = ocrExtracted.map((item, i) => `<div class="review-item"><div class="review-item-header"><div class="review-amount">${item.amount} ₽</div><button class="review-remove" onclick="removeReviewItem(${i})">✕</button></div><div class="review-item-row"><input type="text" value="${item.desc}" placeholder="Описание" onchange="ocrExtracted[${i}].desc=this.value"></div><div class="review-item-row"><select onchange="ocrExtracted[${i}].category=this.value">${getAllCats('expense').map(c => `<option value="${c}" ${c === item.category ? 'selected' : ''}>${c}</option>`).join('')}</select></div></div>`).join('');
     }
 
-    function removeReviewItem(index) {
-      ocrExtracted.splice(index, 1);
-      renderReviewItems();
-    }
-
-    function closeModal() {
-      document.getElementById('ocrModal').classList.remove('active');
-      ocrExtracted = [];
-    }
-
+    function removeReviewItem(i) { ocrExtracted.splice(i, 1); renderReviewItems(); }
+    function closeModal() { document.getElementById('ocrModal').classList.remove('active'); ocrExtracted = []; }
     function confirmReceipt() {
       const date = document.getElementById('date').value || new Date().toISOString().split('T')[0];
-
       for (const item of ocrExtracted) {
-        if (item.amount && item.amount > 0) {
-          transactions.unshift({
-            id: Date.now() + Math.random(),
-            type: 'expense',
-            desc: item.desc || 'Расход из чека',
-            amount: parseFloat(item.amount),
-            category: item.category || 'Еда',
-            date: date
-          });
-        }
+        if (item.amount && item.amount > 0) transactions.unshift({ id: Date.now() + Math.random(), type: 'expense', desc: item.desc || 'Расход из чека', amount: parseFloat(item.amount), category: item.category || 'Еда', date });
       }
-
-      save();
-      render();
-      closeModal();
+      save(); render(); closeModal();
     }
 
     populateCategories();

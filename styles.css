@@ -889,6 +889,189 @@ input:focus, select:focus {
   flex: 0;
 }
 
+.btn-primary {
+  background: #005fb4;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #004a8c;
+}
+
+/* Projects */
+.project-card {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 1px solid #e5e5e5;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.project-card:hover {
+  background: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.project-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.project-card-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.project-card-desc {
+  font-size: 13px;
+  color: #616161;
+  margin-top: 2px;
+}
+
+.project-card-actions {
+  flex-shrink: 0;
+}
+
+.project-card-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.proj-stat {
+  min-width: 80px;
+}
+
+.proj-stat-label {
+  font-size: 12px;
+  color: #8b8b8b;
+  margin-bottom: 2px;
+}
+
+.proj-stat-value {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.project-card-meta {
+  font-size: 12px;
+  color: #8b8b8b;
+}
+
+/* Project detail modal */
+.modal-lg {
+  max-width: 640px;
+}
+
+.btn-close-modal {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #8b8b8b;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close-modal:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #1a1a1a;
+}
+
+.project-summary-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #e5e5e5;
+}
+
+.subgroup-card {
+  background: #f9f9f9;
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #e5e5e5;
+}
+
+.subgroup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.subgroup-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.subgroup-stats {
+  font-size: 13px;
+  color: #616161;
+  margin-top: 2px;
+}
+
+.subgroup-transactions {
+  margin-top: 10px;
+}
+
+.subgroup-actions {
+  margin-top: 10px;
+}
+
+.subgroup-add-row {
+  margin-bottom: 10px;
+}
+
+.subgroup-add-row button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  background: #005fb4;
+  color: #fff;
+  transition: background 0.15s;
+}
+
+.subgroup-add-row button:hover {
+  background: #004a8c;
+}
+
+.subgroup-actions button {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  background: #005fb4;
+  color: #fff;
+  transition: background 0.15s;
+}
+
+.subgroup-actions button:hover {
+  background: #004a8c;
+}
+
 @media (max-width: 768px) {
   body {
     padding: 16px 12px;
@@ -1023,6 +1206,15 @@ input:focus, select:focus {
 
   .debt-actions button {
     min-width: calc(50% - 4px);
+  }
+
+  .project-card-stats {
+    gap: 12px;
+  }
+
+  .project-summary-grid {
+    gap: 12px;
+    padding: 12px;
   }
 
   .modal {
