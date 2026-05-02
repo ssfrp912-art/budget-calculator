@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Бюджет</title>
-  <link rel="stylesheet" href="styles.css?v=2.3.0">
+  <link rel="stylesheet" href="styles.css?v=2.4.0">
 </head>
 <body>
   <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙</button>
@@ -122,16 +122,19 @@
 
     <!-- Bottom Navigation (mobile) -->
     <nav class="bottom-nav" id="bottomNav">
-      <button class="bottom-nav-btn active" data-tab="calculator" onclick="switchTab('calculator')"><span class="tab-label">Калькулятор</span><span class="tab-icon">🧮</span></button>
-      <button class="bottom-nav-btn" data-tab="wallets" onclick="switchTab('wallets')"><span class="tab-label">Кошельки</span><span class="tab-icon">👛</span></button>
-      <button class="bottom-nav-btn" data-tab="debts" onclick="switchTab('debts')"><span class="tab-label">Долги</span><span class="tab-icon">💰</span></button>
-      <button class="bottom-nav-btn more-btn" data-tab="more" onclick="toggleMoreMenu()"><span class="tab-label">Меню</span><span class="tab-icon">☰</span></button>
+      <button class="bottom-nav-btn" data-tab="calculator" onclick="switchTab('calculator')"><span class="tab-label">🧮 Калькулятор</span></button>
+      <button class="bottom-nav-btn" data-tab="wallets" onclick="switchTab('wallets')"><span class="tab-label">👛 Кошельки</span></button>
+      <button class="bottom-nav-btn" data-tab="debts" onclick="switchTab('debts')"><span class="tab-label">💰 Долги</span></button>
+      <button class="bottom-nav-btn" data-tab="more" onclick="toggleMoreMenu()"><span class="tab-label">☰ Меню</span></button>
     </nav>
     <div class="more-sheet" id="moreSheet">
       <div class="more-sheet-header">
         <span class="more-sheet-title">Меню</span>
         <button class="more-sheet-close" onclick="toggleMoreMenu()">✕</button>
       </div>
+      <button class="more-sheet-btn" onclick="switchTab('calculator'); toggleMoreMenu()"><span class="more-sheet-icon">🧮</span><span class="more-sheet-label">Калькулятор</span></button>
+      <button class="more-sheet-btn" onclick="switchTab('wallets'); toggleMoreMenu()"><span class="more-sheet-icon">👛</span><span class="more-sheet-label">Кошельки</span></button>
+      <button class="more-sheet-btn" onclick="switchTab('debts'); toggleMoreMenu()"><span class="more-sheet-icon">💰</span><span class="more-sheet-label">Долги</span></button>
       <button class="more-sheet-btn" onclick="switchTab('projects'); toggleMoreMenu()"><span class="more-sheet-icon">📁</span><span class="more-sheet-label">Проекты</span></button>
       <button class="more-sheet-btn" onclick="switchTab('reports'); toggleMoreMenu()"><span class="more-sheet-icon">📊</span><span class="more-sheet-label">Отчёты</span></button>
       <button class="more-sheet-btn" onclick="switchTab('settings'); toggleMoreMenu()"><span class="more-sheet-icon">⚙️</span><span class="more-sheet-label">Настройки</span></button>
@@ -142,7 +145,7 @@
   <script>
     const ADMIN_PHONE = '79539995588';
     const ADMIN_PASS = '4686';
-    const APP_VERSION = '2.3.0';
+    const APP_VERSION = '2.4.0';
     const DB_NAME = 'BudgetDB';
     const DB_VERSION = 3;
     let db = null;
