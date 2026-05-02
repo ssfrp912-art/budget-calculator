@@ -282,12 +282,9 @@
 
     function renderGitVersion() {
       const el = document.getElementById('settingsVersion');
-      if (GIT_COMMIT !== '60faf295cc72160e4d42b2acfe803e43f302817c' && GIT_DATE !== '2026-05-02') {
-        const d = new Date(GIT_DATE);
-        el.textContent = GIT_COMMIT.substring(0, 7) + ' В· ' + d.toLocaleDateString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric'});
-      } else {
-        el.textContent = 'вЂ”';
-      }
+      const d = new Date(GIT_DATE);
+      el.textContent = GIT_COMMIT.substring(0, 7) + ' · ' + d.toLocaleDateString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric'});
+    }
     }
 
     function renderLastChanged() {
