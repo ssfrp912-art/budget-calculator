@@ -135,6 +135,7 @@
   <script>
     const ADMIN_PHONE = '79539995588';
     const ADMIN_PASS = '4686';
+    const APP_VERSION = '1.2.0';
     const DB_NAME = 'BudgetDB';
     const DB_VERSION = 3;
     let db = null;
@@ -382,21 +383,23 @@
     const pageTitles = { calculator: 'Калькулятор', wallets: 'Кошельки', reports: 'Отчёты', debts: 'Долги', projects: 'Проекты', settings: 'Настройки' };
     function switchTab(tab) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.toggle('active', b.dataset.tab === tab); }); document.querySelectorAll('.bottom-nav-btn').forEach(b=>{ b.classList.toggle('active', b.dataset.tab === tab); }); const titleEl = document.getElementById('pageTitle'); if(titleEl) titleEl.textContent = pageTitles[tab] || ''; document.getElementById('page-'+tab).classList.add('active'); if(tab==='wallets') { renderWallets(); renderWalletReport(); } if(tab==='reports') renderReports(); if(tab==='debts') renderDebts(); if(tab==='projects') renderProjects(); if(tab==='settings') renderSettings(); }
 
-    function renderSettings() { document.getElementById('settingsPhone').textContent = fmtPhone(currentUser.phone); document.getElementById('settingsRole').textContent = currentUser.isAdmin ? 'Администратор' : 'Пользователь'; updateSettingsVersion(); if(currentUser.isAdmin){ document.getElementById('adminSection').style.display='block'; renderUsers(); } else { document.getElementById('adminSection').style.display='none'; } if(!window._versionInterval) window._versionInterval = setInterval(updateSettingsVersion, 1000); }
-
-    async function updateSettingsVersion() {
-      const meta = await dbGet('meta', 'last_changed');
-      const el = document.getElementById('settingsVersion');
-      if(meta && meta.ts) { const d = new Date(meta.ts); el.textContent = d.toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
-      else el.textContent = '—';
-    }
+    function renderSettings() { document.getElementById('settingsPhone').textContent = fmtPhone(currentUser.phone); document.getElementById('settingsRole').textContent = currentUser.isAdmin ? 'Администратор' : 'Пользователь'; document.getElementById('settingsVersion').textContent = APP_VERSION; if(currentUser.isAdmin){ document.getElementById('adminSection').style.display='block'; renderUsers(); } else { document.getElementById('adminSection').style.display='none'; } }
 
     async function renderUsers() {
       const users = await dbGetAll('users');
       const c = document.getElementById('usersList');
       const sorted = users.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
       if(sorted.length === 0){ c.innerHTML='<div class="empty-state">Нет пользователей</div>'; return; }
-      c.innerHTML = sorted.map(u => `<div class="user-card"><div class="user-phone">${fmtPhone(u.phone)}</div><div class="user-meta">Роль: <b>${u.isAdmin?'Админ':'Пользователь'}</b> · Пароль: <b class="user-pass">${u.pass||'—'}</b> · С: ${u.createdAt ? new Date(u.createdAt).toLocaleDateString('ru-RU') : '—'}</div></div>`).join('');
+      c.innerHTML = sorted.map(u => {
+        const isCurrentUser = u.phone === currentUser.phone;
+        return `<div class="user-card"><div class="user-phone">${fmtPhone(u.phone)} ${isCurrentUser ? '(Вы)' : ''}</div><div class="user-meta">Роль: <b>${u.isAdmin?'Админ':'Пользователь'}</b> · Пароль: <b class="user-pass">${u.pass||'—'}</b> · С: ${u.createdAt ? new Date(u.createdAt).toLocaleDateString('ru-RU') : '—'}</div>${!isCurrentUser ? `<button class="add-btn btn-danger" type="button" style="margin-top:8px;padding:8px 14px;font-size:13px" onclick="deleteUser('${u.phone}')">Удалить</button>` : ''}</div>`;
+      }).join('');
+    }
+
+    async function deleteUser(phone) {
+      if (!confirm('Удалить пользователя ' + fmtPhone(phone) + '? Все данные пользователя будут сохранены.')) return;
+      await dbDelete('users', phone);
+      renderUsers();
     }
 
     function getDefaultCats(t){return t==='expense'?['Еда','Транспорт','Жильё','Развлечения','Здоровье','Одежда','Долги','Другое']:['Зарплата','Фриланс','Инвестиции','Другое'];}
