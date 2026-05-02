@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Бюджет</title>
-  <link rel="stylesheet" href="styles.css?v=1.9.0">
+  <link rel="stylesheet" href="styles.css?v=2.0.0">
 </head>
 <body>
   <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙</button>
@@ -123,17 +123,15 @@
     <!-- Bottom Navigation (mobile) -->
     <nav class="bottom-nav" id="bottomNav">
       <div class="bottom-nav-row">
-        <button class="bottom-nav-btn active" data-tab="calculator" onclick="switchTab('calculator')"><span class="tab-label">🧮 Калькулятор</span><span class="tab-icon">🧮</span></button>
-        <button class="bottom-nav-btn" data-tab="wallets" onclick="switchTab('wallets')"><span class="tab-label">👛 Кошельки</span><span class="tab-icon">👛</span></button>
-        <button class="bottom-nav-btn" data-tab="debts" onclick="switchTab('debts')"><span class="tab-label">💰 Долги</span><span class="tab-icon">💰</span></button>
-        <button class="bottom-nav-btn" data-tab="projects" onclick="switchTab('projects')"><span class="tab-label">📁 Проекты</span><span class="tab-icon">📁</span></button>
-      </div>
-      <div class="bottom-nav-row">
-        <button class="bottom-nav-btn" data-tab="more" onclick="toggleMoreMenu()" id="moreMenuBtn"><span class="tab-label">⋯ Ещё</span><span class="tab-icon">☰</span></button>
+        <button class="bottom-nav-btn active" data-tab="calculator" onclick="switchTab('calculator')"><span class="tab-label">Калькулятор</span></button>
+        <button class="bottom-nav-btn" data-tab="wallets" onclick="switchTab('wallets')"><span class="tab-label">Кошельки</span></button>
+        <button class="bottom-nav-btn" data-tab="debts" onclick="switchTab('debts')"><span class="tab-label">Долги</span></button>
+        <button class="bottom-nav-btn" data-tab="projects" onclick="switchTab('projects')"><span class="tab-label">Проекты</span></button>
+        <button class="bottom-nav-btn" data-tab="reports" onclick="switchTab('reports')"><span class="tab-label">Отчёты</span></button>
+        <button class="bottom-nav-btn" data-tab="more" onclick="toggleMoreMenu()" id="moreMenuBtn"><span class="tab-label">⚙️</span></button>
       </div>
     </nav>
     <div class="bottom-more-menu" id="bottomMoreMenu">
-      <button class="more-menu-btn" onclick="switchTab('reports'); toggleMoreMenu()"><span class="more-menu-icon">📊</span><span class="more-menu-label">Отчёты</span></button>
       <button class="more-menu-btn" onclick="switchTab('settings'); toggleMoreMenu()"><span class="more-menu-icon">⚙️</span><span class="more-menu-label">Настройки</span></button>
     </div>
   </div>
@@ -142,7 +140,7 @@
   <script>
     const ADMIN_PHONE = '79539995588';
     const ADMIN_PASS = '4686';
-    const APP_VERSION = '1.9.0';
+    const APP_VERSION = '2.0.0';
     const DB_NAME = 'BudgetDB';
     const DB_VERSION = 3;
     let db = null;
@@ -388,7 +386,7 @@
     function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
     const pageTitles = { calculator: 'Калькулятор', wallets: 'Кошельки', reports: 'Отчёты', debts: 'Долги', projects: 'Проекты', settings: 'Настройки' };
-    function switchTab(tab) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.toggle('active', b.dataset.tab === tab); }); document.querySelectorAll('.bottom-nav-btn').forEach(b=>{ b.classList.toggle('active', b.dataset.tab === tab); }); const titleEl = document.getElementById('pageTitle'); if(titleEl) titleEl.textContent = pageTitles[tab] || ''; document.getElementById('page-'+tab).classList.add('active'); closeMoreMenu(); if(tab==='wallets') { renderWallets(); renderWalletReport(); } if(tab==='reports') renderReports(); if(tab==='debts') renderDebts(); if(tab==='projects') renderProjects(); if(tab==='settings') renderSettings(); }
+    function switchTab(tab) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.toggle('active', b.dataset.tab === tab); }); document.querySelectorAll('.bottom-nav-btn').forEach(b=>{ b.classList.toggle('active', b.dataset.tab === tab); }); const titleEl = document.getElementById('pageTitle'); if(titleEl) titleEl.textContent = pageTitles[tab] || ''; document.getElementById('page-'+tab).classList.add('active'); if(tab!=='settings') closeMoreMenu(); if(tab==='wallets') { renderWallets(); renderWalletReport(); } if(tab==='reports') renderReports(); if(tab==='debts') renderDebts(); if(tab==='projects') renderProjects(); if(tab==='settings') renderSettings(); }
 
     function toggleMoreMenu() { document.getElementById('bottomMoreMenu').classList.toggle('active'); }
     function closeMoreMenu() { document.getElementById('bottomMoreMenu').classList.remove('active'); }
