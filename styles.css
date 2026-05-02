@@ -568,11 +568,11 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .subgroup-trans-amount.expense { color: var(--red); }
 
 /* Bottom Navigation (mobile app style) */
-.bottom-nav { display: none; position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 900; background: var(--bg-card-solid); border: 1px solid var(--border); border-radius: 22px; padding: 16px 20px env(safe-area-inset-bottom, 16px) 20px; box-shadow: 0 -8px 32px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.06); }
-.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: var(--text-muted); font-family: inherit; cursor: pointer; padding: 12px 4px; transition: all var(--transition); border-radius: 16px; min-width: 0; }
+.bottom-nav { display: none; position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 900; background: var(--bg-card-solid); border: 1px solid var(--border); border-radius: 22px; padding: 6px; box-shadow: 0 -8px 32px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.06); }
+.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: none; background: transparent; color: var(--text-muted); font-family: inherit; cursor: pointer; padding: 14px 2px; transition: all var(--transition); border-radius: 18px; min-width: 0; }
 .bottom-nav-btn:active { transform: scale(0.92); background: var(--bg-hover); }
 .bottom-nav-btn.active { color: var(--accent); background: var(--accent-light); box-shadow: 0 6px 20px rgba(0,95,180,0.22), 0 2px 8px rgba(0,95,180,0.1); }
-.bottom-nav-btn .tab-label { font-size: 13px; font-weight: 600; line-height: 1; white-space: nowrap; order: 1; }
+.bottom-nav-btn .tab-label { font-size: 12px; font-weight: 600; line-height: 1; white-space: nowrap; order: 1; }
 .bottom-nav-btn .tab-icon { font-size: 22px; line-height: 1; order: 2; }
 
 /* More Sheet Overlay */
