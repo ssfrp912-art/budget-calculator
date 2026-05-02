@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Бюджет</title>
-  <link rel="stylesheet" href="styles.css?v=1.7.0">
+  <link rel="stylesheet" href="styles.css?v=1.8.0">
 </head>
 <body>
   <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙</button>
@@ -122,12 +122,16 @@
 
     <!-- Bottom Navigation (mobile) -->
     <nav class="bottom-nav" id="bottomNav">
-      <button class="bottom-nav-btn active" data-tab="calculator" onclick="switchTab('calculator')"><span class="tab-label">🧮 Калькулятор</span><span class="tab-icon">🧮</span></button>
-      <button class="bottom-nav-btn" data-tab="wallets" onclick="switchTab('wallets')"><span class="tab-label">👛 Кошельки</span><span class="tab-icon">👛</span></button>
-      <button class="bottom-nav-btn" data-tab="reports" onclick="switchTab('reports')"><span class="tab-label">📊 Отчёты</span><span class="tab-icon">📊</span></button>
-      <button class="bottom-nav-btn" data-tab="debts" onclick="switchTab('debts')"><span class="tab-label">💰 Долги</span><span class="tab-icon">💰</span></button>
-      <button class="bottom-nav-btn" data-tab="projects" onclick="switchTab('projects')"><span class="tab-label">📁 Проекты</span><span class="tab-icon">📁</span></button>
-      <button class="bottom-nav-btn" data-tab="settings" onclick="switchTab('settings')"><span class="tab-label">⚙️ Настройки</span><span class="tab-icon">⚙️</span></button>
+      <div class="bottom-nav-row">
+        <button class="bottom-nav-btn active" data-tab="calculator" onclick="switchTab('calculator')"><span class="tab-label">🧮 Калькулятор</span><span class="tab-icon">🧮</span></button>
+        <button class="bottom-nav-btn" data-tab="wallets" onclick="switchTab('wallets')"><span class="tab-label">👛 Кошельки</span><span class="tab-icon">👛</span></button>
+        <button class="bottom-nav-btn" data-tab="debts" onclick="switchTab('debts')"><span class="tab-label">💰 Долги</span><span class="tab-icon">💰</span></button>
+        <button class="bottom-nav-btn" data-tab="projects" onclick="switchTab('projects')"><span class="tab-label">📁 Проекты</span><span class="tab-icon">📁</span></button>
+      </div>
+      <div class="bottom-nav-row">
+        <button class="bottom-nav-btn" data-tab="reports" onclick="switchTab('reports')"><span class="tab-label">📊 Отчёты</span><span class="tab-icon">📊</span></button>
+        <button class="bottom-nav-btn" data-tab="settings" onclick="switchTab('settings')"><span class="tab-label">⚙️ Настройки</span><span class="tab-icon">⚙️</span></button>
+      </div>
     </nav>
   </div>
 
@@ -135,7 +139,7 @@
   <script>
     const ADMIN_PHONE = '79539995588';
     const ADMIN_PASS = '4686';
-    const APP_VERSION = '1.7.0';
+    const APP_VERSION = '1.8.0';
     const DB_NAME = 'BudgetDB';
     const DB_VERSION = 3;
     let db = null;

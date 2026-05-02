@@ -568,13 +568,14 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .subgroup-trans-amount.expense { color: var(--red); }
 
 /* Bottom Navigation (mobile app style) */
-.bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; background: var(--bg-card-solid); border-top: 1px solid var(--border); padding: 14px 0 env(safe-area-inset-bottom, 20px); box-shadow: 0 -8px 32px rgba(0,0,0,0.12); }
-.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: none; background: transparent; color: var(--text-muted); font-family: inherit; cursor: pointer; padding: 14px 4px; transition: all var(--transition); position: relative; border-radius: var(--radius-sm); }
-.bottom-nav-btn:active { transform: scale(0.88); background: var(--accent-light); }
-.bottom-nav-btn.active { color: var(--accent); }
-.bottom-nav-btn.active::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 32px; height: 3px; background: var(--accent); border-radius: 2px; }
-.bottom-nav-btn .tab-label { font-size: 15px; font-weight: 600; order: 1; white-space: nowrap; letter-spacing: 0.02em; line-height: 1.2; }
-.bottom-nav-btn .tab-icon { font-size: 38px; line-height: 1; order: 2; }
+.bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; background: var(--bg-card-solid); border-top: 1px solid var(--border); padding: 8px 8px env(safe-area-inset-bottom, 12px); box-shadow: 0 -8px 32px rgba(0,0,0,0.12); }
+.bottom-nav-row { display: flex; gap: 6px; margin-bottom: 6px; }
+.bottom-nav-row:last-child { margin-bottom: 0; }
+.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: var(--text-secondary); font-family: inherit; cursor: pointer; padding: 10px 4px; transition: all var(--transition); border-radius: var(--radius-sm); }
+.bottom-nav-btn:active { transform: scale(0.9); background: var(--accent-light); }
+.bottom-nav-btn.active { color: var(--accent); background: var(--accent-light); box-shadow: 0 4px 16px rgba(0,95,180,0.15); }
+.bottom-nav-btn .tab-label { font-size: 12px; font-weight: 600; order: 1; white-space: nowrap; letter-spacing: 0.01em; }
+.bottom-nav-btn .tab-icon { font-size: 26px; line-height: 1; order: 2; }
 
 @media (max-width: 768px) {
   * { -webkit-tap-highlight-color: transparent; }
@@ -585,7 +586,7 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   h1 { font-size: 24px; margin-bottom: 0; }
   .tabs-desktop { display: none !important; }
   .bottom-nav { display: flex; }
-  .container { padding-bottom: 180px; }
+  .container { padding-bottom: 150px; }
   .dashboard { grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
   .card { padding: 14px 16px; }
   .card-value { font-size: 22px; }
@@ -706,7 +707,5 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .dark-toggle { width: 38px; height: 38px; font-size: 16px; }
   .login-card { padding: 18px; }
   .login-logo { font-size: 24px; }
-  .bottom-nav-btn .tab-label { font-size: 13px; font-weight: 600; }
-  .bottom-nav-btn .tab-icon { font-size: 34px; }
-  .container { padding-bottom: 160px; }
+  .container { padding-bottom: 130px; }
 }
