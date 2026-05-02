@@ -78,10 +78,10 @@ h1 {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 3px;
-  margin-bottom: 24px;
   overflow-x: auto;
   flex-shrink: 0;
 }
+.tabs + .tabs { margin-top: 2px; }
 
 .tabs::-webkit-scrollbar { display: none; }
 
@@ -486,73 +486,17 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .subgroup-trans-amount.income { color: var(--green); }
 .subgroup-trans-amount.expense { color: var(--red); }
 
-/* Bottom Navigation (mobile) */
-.bottom-nav {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
-  z-index: 900;
-  padding: 6px 0 env(safe-area-inset-bottom, 6px);
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
-}
-
-.bottom-nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 6px 4px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 10px;
-  font-weight: 400;
-  font-family: inherit;
-  cursor: pointer;
-  flex: 1;
-  transition: color 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.bottom-nav-icon { width: 22px; height: 22px; }
-
-.bottom-nav-item.active { color: var(--accent); }
-.bottom-nav-item.active .bottom-nav-icon { stroke-width: 2.5; }
-
-/* Bottom Nav Mobile */
-@media (max-width: 768px) {
-  .bottom-nav { display: flex; }
-  .container { padding-bottom: 70px; }
-  .page-header { flex-direction: row; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .page-header h1 { flex: 1; margin: 0; }
-  #topTabs { display: flex !important; overflow: visible; flex-shrink: 0; }
-  #topTabs .tab-btn[data-tab="calculator"],
-  #topTabs .tab-btn[data-tab="wallets"],
-  #topTabs .tab-btn[data-tab="debts"],
-  #topTabs .tab-btn[data-tab="projects"] { display: none; }
-  #topTabs .tab-btn { font-size: 12px; padding: 7px 12px; }
-}
-
-/* Top tabs show on desktop */
-@media (min-width: 769px) {
-  .bottom-nav { display: none !important; }
-  .page-header { display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
-}
-
 @media (max-width: 768px) {
   * { -webkit-tap-highlight-color: transparent; }
   body { padding: 8px; }
   .container { max-width: 100%; }
-  .page-header { flex-direction: row; align-items: center; gap: 10px; margin-bottom: 8px; }
-  h1 { font-size: 22px; margin-bottom: 0; }
-  .tabs { width: 100%; margin-bottom: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .page-header { flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 6px; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .tabs { width: 100%; margin-bottom: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+  .tabs + .tabs { margin-top: 2px; }
+  .tabs + .tabs .tab-btn { grid-column: span 2; }
   .tabs::-webkit-scrollbar { display: none; }
-  .tab-btn { flex: 0 0 auto; text-align: center; padding: 9px 14px; font-size: 13px; }
+  .tab-btn { text-align: center; padding: 9px 6px; font-size: 12px; }
   .dashboard { grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
   .card { padding: 14px 16px; }
   .card-value { font-size: 22px; }
@@ -643,7 +587,7 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .transactions-card, .chart-card, .card-reports { padding: 12px; }
   .modal { padding: 16px; max-height: 90vh; }
   .modal-title { font-size: 18px; }
-  .tab-btn { padding: 8px 11px; font-size: 12px; }
+  .tab-btn { padding: 8px 4px; font-size: 11px; }
   .wallet-card { padding: 10px; }
   .wallet-icon { width: 38px; height: 38px; font-size: 22px; }
   .wallet-name { font-size: 14px; }
