@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Бюджет</title>
-  <link rel="stylesheet" href="styles.css?v=2.6.0">
+  <link rel="stylesheet" href="styles.css?v=2.7.0">
 </head>
 <body>
   <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙</button>
@@ -143,7 +143,7 @@
   <script>
     const ADMIN_PHONE = '79539995588';
     const ADMIN_PASS = '4686';
-    const APP_VERSION = '2.6.0';
+    const APP_VERSION = '2.7.0';
     const DB_NAME = 'BudgetDB';
     const DB_VERSION = 3;
     let db = null;
@@ -583,10 +583,10 @@
       if (!amount || amount <= 0) { alert('Введите сумму'); return; }
       const fw = wallets.find(w => w.id === fromId);
       if (fw.balance < amount) { alert('Недостаточно средств'); return; }
-      await recordSnapshot(fw.id, fw.balance, 'Перевод → ' + fw.name);
+      await recordSnapshot(fw.id, fw.balance, 'Перевод → ' + tw.name);
       fw.balance -= amount;
       const tw = wallets.find(w => w.id === toId);
-      await recordSnapshot(tw.id, tw.balance, 'Перевод ← ' + tw.name);
+      await recordSnapshot(tw.id, tw.balance, 'Перевод ← ' + fw.name);
       tw.balance += amount;
       const desc = comment ? 'Перевод: ' + fw.name + ' → ' + tw.name + ' (' + comment + ')' : 'Перевод: ' + fw.name + ' → ' + tw.name;
       transactions.unshift({ id: Date.now(), type: 'transfer', desc, amount, category: 'Перевод', date, walletFrom: fromId, walletTo: toId });

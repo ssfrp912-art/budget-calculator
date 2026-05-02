@@ -381,6 +381,7 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 
 .debt-card { background: var(--bg-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 10px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
 .debt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.debt-person { flex: 1; min-width: 0; }
 .debt-name { font-size: 15px; font-weight: 600; }
 .debt-contact { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 .debt-amount { font-size: 18px; font-weight: 600; color: var(--red); white-space: nowrap; }
@@ -678,6 +679,7 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .debt-card { padding: 14px; }
   .debt-name { font-size: 15px; }
   .debt-amount { font-size: 17px; }
+  .debt-person { min-width: 0; }
   .debt-actions button { padding: 10px; }
   .project-card { padding: 14px; }
   .project-card-name { font-size: 15px; }
