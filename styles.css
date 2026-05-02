@@ -641,17 +641,16 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .category-row { flex-direction: row; gap: 8px; }
   .login-card { padding: 24px; }
   .login-logo { font-size: 26px; }
-  .wallets-total { flex-direction: row; justify-content: space-between; gap: 8px; padding: 12px 14px; text-align: left; }
-  .wallets-total > div:last-child { font-size: 20px; }
-  .wallet-card { padding: 12px; }
-  .wallet-header { gap: 10px; }
-  .wallet-icon { width: 42px; height: 42px; font-size: 24px; flex-shrink: 0; }
-  .wallet-info { flex: 1; min-width: 0; }
-  .wallet-name { font-size: 15px; }
-  .wallet-type { font-size: 12px; }
-  .wallet-balance { font-size: 17px; white-space: nowrap; }
-  .wallet-actions { flex-direction: row; gap: 6px; flex-shrink: 0; margin-top: 0; width: auto; }
-  .wallet-btn-refresh, .wallet-btn-history, .wallet-btn-edit, .wallet-btn-del { width: 38px; height: 38px; font-size: 16px; }
+  .wallets-total { flex-wrap: wrap; gap: 4px 12px; }
+  .wallets-total > div:last-child { font-size: 18px; }
+  .wallet-card { padding: 10px; }
+  .wallet-header { flex-wrap: wrap; gap: 8px; align-items: center; }
+  .wallet-icon { width: 36px; height: 36px; font-size: 18px; }
+  .wallet-info { flex: 1; min-width: 0; margin-right: 6px; }
+  .wallet-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+  .wallet-balance { order: 1; width: 100%; text-align: right; font-size: 16px; margin-top: -4px; }
+  .wallet-actions { order: 2; width: 100%; justify-content: flex-end; gap: 6px; padding-top: 6px; border-top: 1px solid var(--border); margin-top: 4px; }
+  .wallet-btn-refresh, .wallet-btn-history, .wallet-btn-edit, .wallet-btn-del { width: 34px; height: 34px; font-size: 14px; }
   .wallet-report-row { flex-direction: column; gap: 8px; }
   .wallet-report-date-wrap { flex-wrap: wrap; }
   .settings-row { flex-direction: row; align-items: center; gap: 10px; padding: 14px 0; }
