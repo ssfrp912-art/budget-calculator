@@ -78,10 +78,10 @@ h1 {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 3px;
+  margin-bottom: 24px;
   overflow-x: auto;
   flex-shrink: 0;
 }
-.tabs + .tabs { margin-top: 2px; }
 
 .tabs::-webkit-scrollbar { display: none; }
 
@@ -498,8 +498,8 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: none; background: transparent; color: var(--text-secondary); font-family: inherit; cursor: pointer; padding: 6px 4px; transition: all 0.15s; position: relative; }
 .bottom-nav-btn.active { color: var(--accent); }
 .bottom-nav-btn.active::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 32px; height: 2px; background: var(--accent); border-radius: 1px; }
-.bottom-nav-btn .tab-icon { font-size: 24px; line-height: 1; order: 1; }
-.bottom-nav-btn .tab-label { font-size: 11px; order: 2; white-space: nowrap; }
+.bottom-nav-btn .tab-label { font-size: 11px; order: 1; white-space: nowrap; }
+.bottom-nav-btn .tab-icon { font-size: 24px; line-height: 1; order: 2; }
 
 @media (max-width: 768px) {
   * { -webkit-tap-highlight-color: transparent; }
@@ -507,15 +507,9 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .container { max-width: 100%; }
   .page-header { flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 6px; }
   h1 { font-size: 22px; margin-bottom: 4px; }
+  .tabs-desktop { display: none !important; }
   .bottom-nav { display: flex; }
   .container { padding-bottom: 80px; }
-  .tabs { width: 100%; margin-bottom: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
-  .tabs + .tabs { margin-top: 2px; }
-  .tabs + .tabs .tab-btn { grid-column: span 2; }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab-btn { flex-direction: column; padding: 11px 6px 9px; font-size: 14.4px; gap: 3px; }
-  .tab-icon { display: block; order: 2; font-size: 21.6px; line-height: 1; }
-  .tab-label { order: 1; white-space: nowrap; font-size: 13.2px; }
   .dashboard { grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
   .card { padding: 14px 16px; }
   .card-value { font-size: 22px; }
