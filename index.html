@@ -274,12 +274,12 @@
     function showApp() {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('appScreen').style.display = 'block';
-      loadData();
       document.getElementById('date').valueAsDate = new Date();
       document.getElementById('debtDate').valueAsDate = new Date();
       document.getElementById('transferDate').valueAsDate = new Date();
       updateLastChanged();
-      populateCategories(); render(); renderSettings();
+      renderSettings();
+      loadData().then(() => { populateCategories(); render(); });
     }
 
     async function handleLogin() {
@@ -349,22 +349,26 @@
     function uKey(k) { return 'budget_' + currentUser.phone + '_' + k; }
 
     async function loadData() {
-      try {
-        const tx = db.transaction('data', 'readonly');
-        const req = tx.objectStore('data').index('phone').getAll(currentUser.phone);
-        req.onsuccess = () => {
-          transactions = []; customCategories = {}; debts = []; projects = []; wallets = []; walletSnapshots = [];
-          req.result.forEach(item => {
-            if (item.key.endsWith('_transactions')) transactions = item.data;
-            else if (item.key.endsWith('_categories')) customCategories = item.data;
-            else if (item.key.endsWith('_debts')) debts = item.data;
-            else if (item.key.endsWith('_projects')) projects = item.data;
-            else if (item.key.endsWith('_wallets')) wallets = item.data;
-            else if (item.key.endsWith('_wallet_snapshots')) walletSnapshots = item.data;
-          });
-          populateWalletSelect(); renderWallets();
-        };
-      } catch(e) { console.error('Load error:', e); }
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction('data', 'readonly');
+          const req = tx.objectStore('data').index('phone').getAll(currentUser.phone);
+          req.onsuccess = () => {
+            transactions = []; customCategories = {}; debts = []; projects = []; wallets = []; walletSnapshots = [];
+            req.result.forEach(item => {
+              if (item.key.endsWith('_transactions')) transactions = item.data;
+              else if (item.key.endsWith('_categories')) customCategories = item.data;
+              else if (item.key.endsWith('_debts')) debts = item.data;
+              else if (item.key.endsWith('_projects')) projects = item.data;
+              else if (item.key.endsWith('_wallets')) wallets = item.data;
+              else if (item.key.endsWith('_wallet_snapshots')) walletSnapshots = item.data;
+            });
+            populateWalletSelect(); renderWallets();
+            resolve();
+          };
+          req.onerror = () => resolve();
+        } catch(e) { console.error('Load error:', e); resolve(); }
+      });
     }
 
     async function saveData(k, d) {
