@@ -431,6 +431,13 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .btn-forgot { background: none !important; border: none; color: var(--accent) !important; cursor: pointer; font-size: 13px; margin-top: 8px; width: 100%; padding: 8px; font-family: inherit; }
 .btn-forgot:hover { color: var(--accent-hover) !important; text-decoration: underline; }
 
+.btn-register { background: var(--bg-hover) !important; color: var(--text); border: 1px solid var(--border) !important; margin-top: 8px; }
+.btn-register:hover { background: var(--border) !important; }
+
+.login-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 8px; }
+.login-divider span { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; }
 
 /* Dark mode toggle */
@@ -553,6 +560,8 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .type-toggle { gap: 8px; margin-bottom: 12px; }
   .type-btn { padding: 10px; font-size: 14px; }
   .btn-forgot { padding: 10px; font-size: 14px; }
+  .btn-register { padding: 12px; font-size: 14px; }
+  .login-divider { margin: 14px 0 8px; }
   .user-card { padding: 12px; }
   .user-phone { font-size: 15px; }
   .empty-state { padding: 30px 16px; }
