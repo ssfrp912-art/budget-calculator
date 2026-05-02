@@ -568,13 +568,13 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .subgroup-trans-amount.expense { color: var(--red); }
 
 /* Bottom Navigation (mobile app style) */
-.bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; background: var(--bg-card-solid); border-top: 1px solid var(--border); padding: 6px 8px env(safe-area-inset-bottom, 6px); box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
-.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: none; background: transparent; color: var(--text-muted); font-family: inherit; cursor: pointer; padding: 8px 2px 10px; transition: all var(--transition); border-radius: var(--radius-sm); min-width: 48px; }
+.bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; background: var(--bg-card-solid); border-top: 1px solid var(--border); padding: 8px 12px env(safe-area-inset-bottom, 8px); box-shadow: 0 -4px 24px rgba(0,0,0,0.1); }
+.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: none; background: transparent; color: var(--text-muted); font-family: inherit; cursor: pointer; padding: 10px 2px 12px; transition: all var(--transition); border-radius: var(--radius-sm); min-width: 48px; }
 .bottom-nav-btn:active { transform: scale(0.9); background: var(--bg-hover); }
 .bottom-nav-btn.active { color: var(--accent); background: var(--accent-light); }
-.bottom-nav-btn.active::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 16px; height: 3px; background: var(--accent); border-radius: 2px; }
-.bottom-nav-btn .tab-label { font-size: 10px; font-weight: 500; line-height: 1; white-space: nowrap; }
-.bottom-nav-btn .tab-icon { font-size: 22px; line-height: 1; }
+.bottom-nav-btn.active::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 20px; height: 3px; background: var(--accent); border-radius: 2px; }
+.bottom-nav-btn .tab-label { font-size: 11px; font-weight: 500; line-height: 1; white-space: nowrap; }
+.bottom-nav-btn .tab-icon { font-size: 24px; line-height: 1; }
 .bottom-nav-btn.more-btn { color: var(--text-secondary); }
 .bottom-nav-btn.more-btn.active { color: var(--accent); background: var(--accent-light); }
 
