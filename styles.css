@@ -568,23 +568,29 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .subgroup-trans-amount.expense { color: var(--red); }
 
 /* Bottom Navigation (mobile app style) */
-.bottom-nav { display: none; position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 900; background: var(--bg-card-solid); border: 1px solid var(--border); border-radius: 20px; padding: 16px 20px env(safe-area-inset-bottom, 16px) 20px; box-shadow: 0 -8px 32px rgba(0,0,0,0.13); }
-.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: none; background: transparent; color: var(--text-muted); font-family: inherit; cursor: pointer; padding: 18px 8px 20px; transition: all var(--transition); border-radius: var(--radius); min-width: 52px; font-weight: 500; font-size: 12px; }
-.bottom-nav-btn:active { transform: scale(0.92); }
-.bottom-nav-btn.active { color: var(--accent); background: var(--accent-light); box-shadow: 0 8px 24px rgba(0,95,180,0.2); }
-.bottom-nav-btn .tab-label { font-size: 14px; font-weight: 600; line-height: 1; white-space: nowrap; }
+.bottom-nav { display: none; position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 900; background: var(--bg-card-solid); border: 1px solid var(--border); border-radius: 22px; padding: 16px 20px env(safe-area-inset-bottom, 16px) 20px; box-shadow: 0 -8px 32px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.06); }
+.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: var(--text-muted); font-family: inherit; cursor: pointer; padding: 12px 4px; transition: all var(--transition); border-radius: 16px; min-width: 0; }
+.bottom-nav-btn:active { transform: scale(0.92); background: var(--bg-hover); }
+.bottom-nav-btn.active { color: var(--accent); background: var(--accent-light); box-shadow: 0 6px 20px rgba(0,95,180,0.22), 0 2px 8px rgba(0,95,180,0.1); }
+.bottom-nav-btn .tab-label { font-size: 13px; font-weight: 600; line-height: 1; white-space: nowrap; order: 1; }
+.bottom-nav-btn .tab-icon { font-size: 22px; line-height: 1; order: 2; }
+
+/* More Sheet Overlay */
+.more-sheet-overlay { display: none; position: fixed; inset: 0; z-index: 940; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease; }
+.more-sheet-overlay.active { display: block; opacity: 1; }
 
 /* More Sheet */
-.more-sheet { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 950; background: var(--bg-card-solid); border-top: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; padding: 16px 16px env(safe-area-inset-bottom, 16px); box-shadow: 0 -8px 32px rgba(0,0,0,0.12); transform: translateY(100%); transition: transform 0.3s ease; max-height: 40vh; overflow-y: auto; }
-.more-sheet.active { display: block; transform: translateY(0); }
-.more-sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-.more-sheet-title { font-size: 17px; font-weight: 600; color: var(--text); }
-.more-sheet-close { width: 32px; height: 32px; border: none; border-radius: 50%; background: var(--bg-hover); color: var(--text-secondary); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--transition); }
-.more-sheet-close:hover { background: var(--border); }
-.more-sheet-btn { display: flex; align-items: center; gap: 14px; padding: 14px 12px; border: none; background: transparent; color: var(--text); font-family: inherit; font-size: 16px; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); transition: background var(--transition); width: 100%; }
-.more-sheet-btn:active { background: var(--accent-light); }
-.more-sheet-icon { font-size: 24px; }
+.more-sheet { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 950; background: var(--bg-card-solid); border-radius: 24px 24px 0 0; padding: 12px 16px env(safe-area-inset-bottom, 16px) 16px; box-shadow: 0 -12px 40px rgba(0,0,0,0.2); transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); max-height: 55vh; }
+.more-sheet.active { display: flex; flex-direction: column; transform: translateY(0); }
+.more-sheet-handle { width: 36px; height: 4px; background: var(--border-strong); border-radius: 2px; margin: 0 auto 14px; flex-shrink: 0; }
+.more-sheet-btn { display: flex; align-items: center; gap: 14px; padding: 14px 12px; border: none; background: transparent; color: var(--text); font-family: inherit; font-size: 16px; font-weight: 500; cursor: pointer; border-radius: 12px; transition: all var(--transition); width: 100%; flex-shrink: 0; }
+.more-sheet-btn:active { transform: scale(0.97); }
+.more-sheet-btn.active { color: var(--accent); background: var(--accent-light); }
+.more-sheet-btn.active .more-sheet-icon { transform: scale(1.1); }
+.more-sheet-icon { font-size: 24px; transition: transform var(--transition); flex-shrink: 0; }
 .more-sheet-label { font-size: 16px; }
+
+/* More Sheet */
 
 @media (max-width: 768px) {
   * { -webkit-tap-highlight-color: transparent; }
@@ -595,8 +601,9 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   h1 { font-size: 24px; margin-bottom: 0; }
   .tabs-desktop { display: none !important; }
   .bottom-nav { display: flex; }
-  .bottom-nav-btn { padding: 18px 8px 20px; font-size: 12px; }
-  .bottom-nav-btn .tab-label { font-size: 14px; }
+  .bottom-nav-btn { padding: 12px 4px; }
+  .bottom-nav-btn .tab-label { font-size: 12px; }
+  .bottom-nav-btn .tab-icon { font-size: 20px; }
   .container { padding-bottom: 100px; }
   .dashboard { grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
   .card { padding: 14px 16px; }
@@ -718,9 +725,11 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .dark-toggle { width: 38px; height: 38px; font-size: 16px; }
   .login-card { padding: 18px; }
   .login-logo { font-size: 24px; }
-  .bottom-nav-btn .tab-label { font-size: 9px; }
-  .bottom-nav-btn .tab-icon { font-size: 20px; }
-  .more-sheet-btn { padding: 12px 10px; font-size: 15px; }
+  .bottom-nav-btn .tab-label { font-size: 11px; }
+  .bottom-nav-btn .tab-icon { font-size: 18px; }
+  .more-sheet-btn { padding: 12px 10px; }
   .more-sheet-icon { font-size: 22px; }
-  .container { padding-bottom: 60px; }
+  .more-sheet-label { font-size: 15px; }
+  .more-sheet { max-height: 50vh; }
+  .container { padding-bottom: 92px; }
 }
