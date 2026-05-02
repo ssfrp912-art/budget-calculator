@@ -443,42 +443,64 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .wallets-total { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--bg-hover); border-radius: 6px; border: 1px solid var(--border); margin-bottom: 16px; font-size: 16px; }
 .wallets-total > div:last-child { font-size: 22px; font-weight: 700; color: var(--accent); }
 
-.wallet-card { background: var(--bg-card); border-radius: 8px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); cursor: pointer; transition: background 0.15s, box-shadow 0.15s; }
+.wallet-card { background: var(--bg-card); border-radius: 8px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); transition: background 0.15s, box-shadow 0.15s; }
 .wallet-card:hover { background: var(--bg-hover); box-shadow: var(--shadow); }
 .wallet-header { display: flex; align-items: center; gap: 12px; }
-.wallet-icon { font-size: 28px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--bg-hover); border-radius: 8px; }
-.wallet-info { flex: 1; }
+.wallet-icon { font-size: 28px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--bg-hover); border-radius: 8px; flex-shrink: 0; }
+.wallet-info { flex: 1; min-width: 0; }
 .wallet-name { font-size: 15px; font-weight: 600; }
 .wallet-type { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 .wallet-balance { font-size: 18px; font-weight: 700; white-space: nowrap; }
-.wallet-actions { display: flex; gap: 4px; }
-.wallet-btn-edit, .wallet-btn-del { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; background: transparent; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.wallet-btn-edit { color: var(--accent); }
-.wallet-btn-edit:hover { background: var(--accent); color: #fff; }
+.wallet-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.wallet-btn-refresh, .wallet-btn-history, .wallet-btn-edit, .wallet-btn-del { width: 30px; height: 30px; border: 1px solid var(--border); border-radius: 6px; background: transparent; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+.wallet-btn-refresh { color: var(--green); }
+.wallet-btn-refresh:hover { background: var(--green); color: #fff; border-color: var(--green); }
+.wallet-btn-history { color: var(--accent); }
+.wallet-btn-history:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.wallet-btn-edit { color: var(--purple); }
+.wallet-btn-edit:hover { background: var(--purple); color: #fff; border-color: var(--purple); }
 .wallet-btn-del { color: var(--red); }
-.wallet-btn-del:hover { background: var(--red); color: #fff; }
+.wallet-btn-del:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+.wallet-report-controls { margin-bottom: 16px; }
+.wallet-report-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.wallet-report-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.wallet-report-row select { flex: 1; }
+.wallet-report-date-wrap { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.wallet-report-date-wrap input { flex: 1; }
+.wallet-report-date-wrap span { color: var(--text-secondary); }
+
+.subgroup-trans-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-radius: 4px; margin-bottom: 4px; transition: background 0.15s; }
+.subgroup-trans-item:hover { background: var(--bg-hover); }
+.subgroup-trans-info { flex: 1; }
+.subgroup-trans-desc { font-size: 14px; font-weight: 500; }
+.subgroup-trans-meta { font-size: 12px; color: var(--text-secondary); }
+.subgroup-trans-amount { font-size: 14px; font-weight: 600; margin-right: 8px; }
+.subgroup-trans-amount.income { color: var(--green); }
+.subgroup-trans-amount.expense { color: var(--red); }
 
 @media (max-width: 768px) {
-  body { padding: 12px; }
+  body { padding: 8px; }
   .container { max-width: 100%; }
-  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
-  h1 { font-size: 22px; }
-  .tabs { width: 100%; margin-bottom: 12px; }
-  .tab-btn { flex: 1; text-align: center; padding: 8px 10px; font-size: 12px; }
-  .dashboard { grid-template-columns: 1fr; gap: 8px; margin-bottom: 16px; }
-  .card { padding: 14px 16px; }
-  .card-value { font-size: 22px; }
-  .main-grid { grid-template-columns: 1fr; gap: 12px; }
-  .form-card { padding: 18px; }
-  .form-title { font-size: 16px; margin-bottom: 14px; }
-  .transactions-card, .chart-card, .card-reports { padding: 16px; }
-  .transactions-title, .chart-title { font-size: 16px; margin-bottom: 12px; }
-  .transactions-list { max-height: 280px; }
-  .chart-bar-label { width: 70px; font-size: 12px; }
-  .chart-bar-value { width: 65px; font-size: 12px; }
-  .stat-table { font-size: 13px; }
-  .stat-table th { padding: 8px 10px; font-size: 11px; }
-  .stat-table td { padding: 10px; font-size: 13px; }
+  .page-header { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 10px; }
+  h1 { font-size: 20px; }
+  .tabs { width: 100%; margin-bottom: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { flex: 0 0 auto; text-align: center; padding: 8px 12px; font-size: 12px; }
+  .dashboard { grid-template-columns: 1fr; gap: 8px; margin-bottom: 14px; }
+  .card { padding: 12px 14px; }
+  .card-value { font-size: 20px; }
+  .main-grid { grid-template-columns: 1fr; gap: 10px; }
+  .form-card { padding: 16px; }
+  .form-title { font-size: 16px; margin-bottom: 12px; }
+  .transactions-card, .chart-card, .card-reports { padding: 14px; }
+  .transactions-title, .chart-title, .debts-title { font-size: 16px; margin-bottom: 10px; }
+  .transactions-list { max-height: 260px; }
+  .chart-bar-label { width: 60px; font-size: 11px; }
+  .chart-bar-value { width: 55px; font-size: 11px; }
+  .stat-table { font-size: 12px; display: block; overflow-x: auto; }
+  .stat-table th { padding: 8px 8px; font-size: 11px; white-space: nowrap; }
+  .stat-table td { padding: 8px; font-size: 12px; white-space: nowrap; }
   .reports-controls { flex-direction: column; gap: 8px; }
   .reports-controls select, .reports-controls input { width: 100%; min-width: 100%; }
   #reportYear { width: 100%; }
@@ -487,22 +509,41 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .btn-sm { text-align: center; }
   .debt-actions { flex-wrap: wrap; }
   .debt-actions button { min-width: calc(50% - 4px); }
-  .project-card-stats { gap: 12px; }
-  .project-summary-grid { gap: 12px; padding: 12px; }
-  .modal { padding: 20px; max-height: 90vh; margin: 10px; }
+  .project-card-stats { gap: 10px; }
+  .project-summary-grid { gap: 10px; padding: 10px; }
+  .modal { padding: 18px; max-height: 90vh; margin: 8px; }
   .modal-title { font-size: 18px; }
   .review-item { padding: 10px; }
   .review-item-row { flex-direction: column; gap: 6px; }
   .category-row { flex-direction: row; gap: 6px; }
-  .login-card { padding: 24px; }
+  .login-card { padding: 20px; }
   .login-logo { font-size: 24px; }
+  .wallet-header { flex-wrap: wrap; gap: 8px; }
+  .wallet-icon { width: 38px; height: 38px; font-size: 22px; }
+  .wallet-balance { font-size: 16px; }
+  .wallet-actions { width: 100%; justify-content: flex-end; margin-top: 6px; }
+  .wallet-btn-refresh, .wallet-btn-history, .wallet-btn-edit, .wallet-btn-del { width: 34px; height: 34px; font-size: 15px; }
+  .wallet-report-row { flex-direction: column; gap: 6px; }
+  .wallet-report-date-wrap { flex-direction: column; }
+  .wallets-total { flex-direction: column; gap: 4px; text-align: center; }
+  .settings-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .settings-row button { width: 100%; }
+  .dark-toggle { top: 10px; right: 10px; width: 36px; height: 36px; font-size: 16px; }
+  .transaction-item { flex-wrap: wrap; gap: 4px; }
+  .transaction-amount { margin-right: 4px; }
+  .subgroup-trans-item { flex-wrap: wrap; gap: 4px; }
+  .subgroup-trans-amount { margin-right: 4px; }
 }
 
 @media (max-width: 400px) {
-  h1 { font-size: 20px; }
-  .card-value { font-size: 20px; }
-  .form-card { padding: 14px; }
-  .modal { padding: 16px; }
+  h1 { font-size: 18px; }
+  .card-value { font-size: 18px; }
+  .form-card { padding: 12px; }
+  .modal { padding: 14px; }
   .debt-actions button { min-width: 100%; }
-  .tab-btn { padding: 6px 8px; font-size: 11px; }
+  .tab-btn { padding: 6px 10px; font-size: 11px; }
+  .wallet-name { font-size: 14px; }
+  .wallet-type { font-size: 11px; }
+  .wallet-balance { font-size: 15px; }
+  .wallet-icon { width: 34px; height: 34px; font-size: 20px; }
 }

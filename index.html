@@ -70,6 +70,22 @@
           <div class="wallets-total"><div>Общий баланс:</div><div id="walletsTotalBalance">0 ₽</div></div>
           <div id="walletsList"><div class="empty-state">Нет кошельков</div></div>
         </div>
+        <div class="card-reports">
+          <div class="wallet-report-controls">
+            <div class="wallet-report-title">Отчёт по кошелькам</div>
+            <div class="wallet-report-row">
+              <select id="walletReportWallet"><option value="">Все кошельки</option></select>
+              <select id="walletReportPeriod"><option value="week">Неделя</option><option value="month">Месяц</option><option value="custom">Произвольная дата</option></select>
+            </div>
+            <div class="wallet-report-date-wrap" id="walletReportDateWrap" style="display:none">
+              <input type="date" id="walletReportDateFrom">
+              <span>—</span>
+              <input type="date" id="walletReportDateTo">
+            </div>
+            <button class="add-btn btn-sm" onclick="renderWalletReport()">Показать</button>
+          </div>
+          <div id="walletReportContent"><div class="empty-state">Выберите период</div></div>
+        </div>
       </div>
 
       <div class="page" id="page-reports"><div class="card-reports"><div class="reports-controls"><select id="reportPeriod" onchange="renderReports()"><option value="days">По дням</option><option value="months" selected>По месяцам</option><option value="years">По годам</option></select><input type="month" id="reportMonth" onchange="renderReports()"><input type="number" id="reportYear" placeholder="Год" min="2000" max="2099" onchange="renderReports()"></div><div id="reportContent"><div class="empty-state">Нет данных</div></div></div></div>
@@ -86,7 +102,9 @@
     </div>
 
     <!-- Modals -->
-    <div class="modal-overlay" id="walletModal"><div class="modal"><div class="modal-title" id="walletModalTitle">Кошелёк</div><div class="form-group"><label>Название</label><input type="text" id="walletName" placeholder="Например: Наличка"></div><div class="form-group"><label>Тип</label><select id="walletType"><option value="cash">Наличка</option><option value="card">Банковская карта</option><option value="account">Счёт</option><option value="other">Другое</option></select></div><div class="form-group"><label>Начальный баланс</label><input type="number" id="walletBalance" placeholder="0" min="0" step="0.01"></div><div class="modal-actions" id="walletActions"><button class="btn-cancel" type="button" onclick="closeModalById('walletModal')">Отмена</button><button class="btn-confirm" type="button" onclick="saveWallet()">Сохранить</button></div></div></div>
+    <div class="modal-overlay" id="walletModal"><div class="modal"><div class="modal-title" id="walletModalTitle">Кошелёк</div><div class="form-group"><label>Название</label><input type="text" id="walletName" placeholder="Например: Инвестиции"></div><div class="form-group"><label>Тип</label><select id="walletType"><option value="cash">Наличка</option><option value="card">Банковская карта</option><option value="account">Счёт</option><option value="other">Другое</option></select></div><div class="form-group"><label>Баланс</label><input type="number" id="walletBalance" placeholder="0" min="0" step="0.01"></div><div class="modal-actions" id="walletActions"><button class="btn-cancel" type="button" onclick="closeModalById('walletModal')">Отмена</button><button class="btn-confirm" type="button" onclick="saveWallet()">Сохранить</button></div></div></div>
+    <div class="modal-overlay" id="walletUpdateModal"><div class="modal"><div class="modal-title">Обновить баланс</div><div class="modal-subtitle" id="walletUpdateName"></div><div class="form-group"><label>Новый баланс</label><input type="number" id="walletUpdateBalance" placeholder="0" step="0.01"></div><div class="form-group"><label>Комментарий</label><input type="text" id="walletUpdateComment" placeholder="Например: Акции выросли"></div><div class="modal-actions" id="walletUpdateActions"><button class="btn-cancel" type="button" onclick="closeModalById('walletUpdateModal')">Отмена</button><button class="btn-confirm" type="button" onclick="confirmWalletUpdate()">Обновить</button></div></div></div>
+    <div class="modal-overlay" id="walletHistoryModal"><div class="modal"><div class="modal-title" id="walletHistoryTitle">История</div><div id="walletHistoryContent"></div><div class="modal-actions" style="display:flex"><button class="btn-confirm" type="button" onclick="closeModalById('walletHistoryModal')">Закрыть</button></div></div></div>
     <div class="modal-overlay" id="transferModal"><div class="modal"><div class="modal-title">Перевод</div><div class="form-group"><label>Откуда</label><select id="transferFrom"></select></div><div class="form-group"><label>Куда</label><select id="transferTo"></select></div><div class="form-group"><label>Сумма</label><input type="number" id="transferAmount" placeholder="0" min="0" step="0.01"></div><div class="form-group"><label>Комментарий</label><input type="text" id="transferComment"></div><div class="form-group"><label>Дата</label><input type="date" id="transferDate"></div><div class="modal-actions" id="transferActions"><button class="btn-cancel" type="button" onclick="closeModalById('transferModal')">Отмена</button><button class="btn-confirm" type="button" onclick="doTransfer()">Перевести</button></div></div></div>
     <div class="modal-overlay" id="ocrModal"><div class="modal"><div class="modal-title">Распознать чек</div><div class="modal-subtitle" id="ocrStatus">Обработка...</div><img class="ocr-preview" id="ocrPreview"><div class="ocr-progress" id="ocrProgress"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><div class="progress-text" id="progressText">0%</div></div><div id="reviewItems"></div><div class="modal-actions" id="ocrActions"><button class="btn-cancel" type="button" onclick="closeModal()">Отмена</button><button class="btn-confirm" type="button" onclick="confirmReceipt()">Добавить</button></div></div></div>
     <div class="modal-overlay" id="debtModal"><div class="modal"><div class="modal-title">Дать в долг</div><div class="modal-subtitle">Данные должника</div><div class="form-group"><label>Имя</label><input type="text" id="debtName" placeholder="Иван"></div><div class="form-group"><label>Телефон</label><input type="text" id="debtPhone" placeholder="+7..."></div><div class="form-group"><label>Сумма</label><input type="number" id="debtAmount" placeholder="0" min="0"></div><div class="form-group"><label>Комментарий</label><input type="text" id="debtComment"></div><div class="form-group"><label>Дата</label><input type="date" id="debtDate"></div><div class="modal-actions" id="debtActions"><button class="btn-cancel" type="button" onclick="closeDebtModal()">Отмена</button><button class="btn-confirm" type="button" onclick="addDebt()">Создать</button></div></div></div>
@@ -103,7 +121,7 @@
     const ADMIN_PHONE = '79539995588';
     const ADMIN_PASS = '4686';
     const DB_NAME = 'BudgetDB';
-    const DB_VERSION = 2;
+    const DB_VERSION = 3;
     let db = null;
 
     function openDB() {
@@ -167,9 +185,7 @@
           const existing = await dbGetAll('users');
           const existingPhones = new Set(existing.map(u => u.phone));
           for (const [phone, data] of Object.entries(lsUsers)) {
-            if (!existingPhones.has(phone)) {
-              await dbPut('users', { phone, ...data });
-            }
+            if (!existingPhones.has(phone)) await dbPut('users', { phone, ...data });
           }
           localStorage.removeItem('budget_users');
         }
@@ -178,7 +194,7 @@
 
     let currentUser = null;
     let currentType = 'expense';
-    let transactions = [], customCategories = {}, debts = [], projects = [], wallets = [];
+    let transactions = [], customCategories = {}, debts = [], projects = [], wallets = [], walletSnapshots = [];
 
     async function checkSession() {
       await openDB();
@@ -228,32 +244,25 @@
       const phone = document.getElementById('loginPhone').value.trim();
       const clean = sanitize(phone);
       if (clean.length < 11) { alert('Введите корректный номер'); return; }
-
       if (clean === ADMIN_PHONE) {
         const pass = document.getElementById('loginPass').value;
         if (pass !== ADMIN_PASS) { alert('Неверный пароль'); return; }
         const existing = await dbGet('users', ADMIN_PHONE);
-        if (!existing) {
-          await dbPut('users', { phone: ADMIN_PHONE, pass: ADMIN_PASS, isAdmin: true, createdAt: new Date().toISOString() });
-        } else if (!existing.isAdmin) {
-          await dbPut('users', { ...existing, isAdmin: true });
-        }
+        if (!existing) await dbPut('users', { phone: ADMIN_PHONE, pass: ADMIN_PASS, isAdmin: true, createdAt: new Date().toISOString() });
+        else if (!existing.isAdmin) await dbPut('users', { ...existing, isAdmin: true });
         localStorage.setItem('budget_session', ADMIN_PHONE);
         currentUser = { phone: ADMIN_PHONE, isAdmin: true };
         showApp(); return;
       }
-
       const exists = await dbGet('users', clean);
-
       if (!exists) {
         const pass = document.getElementById('newPass').value;
         if (pass.length < 4) { alert('Пароль минимум 4 символа'); return; }
-        await dbPut('users', { phone: clean, pass: pass, createdAt: new Date().toISOString(), isAdmin: false });
+        await dbPut('users', { phone: clean, pass, createdAt: new Date().toISOString(), isAdmin: false });
         localStorage.setItem('budget_session', clean);
         currentUser = { phone: clean, isAdmin: false };
         showApp(); return;
       }
-
       const pass = document.getElementById('loginPass').value;
       if (pass !== exists.pass) { alert('Неверный пароль'); return; }
       localStorage.setItem('budget_session', clean);
@@ -276,13 +285,14 @@
       document.getElementById('newPass').addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
       document.getElementById('logoutBtn').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); handleLogout(); return false; });
       document.getElementById('newCategoryInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') addCategory(); });
-      document.getElementById('forgotPhone').addEventListener('input', function() {
-        document.getElementById('forgotResult').style.display = 'none';
+      document.getElementById('forgotPhone').addEventListener('input', function() { document.getElementById('forgotResult').style.display = 'none'; });
+      document.getElementById('walletReportPeriod').addEventListener('change', function() {
+        document.getElementById('walletReportDateWrap').style.display = this.value === 'custom' ? 'flex' : 'none';
       });
     });
 
     function toggleDark() { document.body.classList.toggle('dark'); localStorage.setItem('budget_dark', document.body.classList.contains('dark') ? '1' : ''); document.getElementById('darkToggle').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙'; }
-    if (localStorage.getItem('budget_dark')) { document.body.classList.add('dark'); }
+    if (localStorage.getItem('budget_dark')) document.body.classList.add('dark');
 
     function uKey(k) { return 'budget_' + currentUser.phone + '_' + k; }
 
@@ -291,13 +301,14 @@
         const tx = db.transaction('data', 'readonly');
         const req = tx.objectStore('data').index('phone').getAll(currentUser.phone);
         req.onsuccess = () => {
-          transactions = []; customCategories = {}; debts = []; projects = []; wallets = [];
+          transactions = []; customCategories = {}; debts = []; projects = []; wallets = []; walletSnapshots = [];
           req.result.forEach(item => {
             if (item.key.endsWith('_transactions')) transactions = item.data;
             else if (item.key.endsWith('_categories')) customCategories = item.data;
             else if (item.key.endsWith('_debts')) debts = item.data;
             else if (item.key.endsWith('_projects')) projects = item.data;
             else if (item.key.endsWith('_wallets')) wallets = item.data;
+            else if (item.key.endsWith('_wallet_snapshots')) walletSnapshots = item.data;
           });
           populateWalletSelect(); renderWallets();
         };
@@ -305,23 +316,22 @@
     }
 
     async function saveData(k, d) {
-      const key = uKey(k);
-      await dbPut('data', { key, phone: currentUser.phone, data: d });
+      await dbPut('data', { key: uKey(k), phone: currentUser.phone, data: d });
       updateLastChanged();
     }
 
     function updateLastChanged() { dbPut('meta', { key: 'last_changed', ts: Date.now() }); }
-
     function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
-    function switchTab(tab) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('page-'+tab).classList.add('active'); if(event&&event.target) event.target.classList.add('active'); if(tab==='wallets') renderWallets(); if(tab==='reports') renderReports(); if(tab==='debts') renderDebts(); if(tab==='projects') renderProjects(); if(tab==='settings') renderSettings(); }
+    function switchTab(tab) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('page-'+tab).classList.add('active'); if(event&&event.target) event.target.classList.add('active'); if(tab==='wallets') { renderWallets(); renderWalletReport(); } if(tab==='reports') renderReports(); if(tab==='debts') renderDebts(); if(tab==='projects') renderProjects(); if(tab==='settings') renderSettings(); }
 
-    function renderSettings() { document.getElementById('settingsPhone').textContent = fmtPhone(currentUser.phone); document.getElementById('settingsRole').textContent = currentUser.isAdmin ? 'Администратор' : 'Пользователь'; updateSettingsVersion(); if(currentUser.isAdmin){ document.getElementById('adminSection').style.display='block'; renderUsers(); } else { document.getElementById('adminSection').style.display='none'; } if(!window._versionInterval){ window._versionInterval = setInterval(updateSettingsVersion, 1000); } }
+    function renderSettings() { document.getElementById('settingsPhone').textContent = fmtPhone(currentUser.phone); document.getElementById('settingsRole').textContent = currentUser.isAdmin ? 'Администратор' : 'Пользователь'; updateSettingsVersion(); if(currentUser.isAdmin){ document.getElementById('adminSection').style.display='block'; renderUsers(); } else { document.getElementById('adminSection').style.display='none'; } if(!window._versionInterval) window._versionInterval = setInterval(updateSettingsVersion, 1000); }
 
     async function updateSettingsVersion() {
       const meta = await dbGet('meta', 'last_changed');
       const el = document.getElementById('settingsVersion');
-      if(meta && meta.ts) { const d = new Date(meta.ts); el.textContent = d.toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); } else { el.textContent = '—'; }
+      if(meta && meta.ts) { const d = new Date(meta.ts); el.textContent = d.toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+      else el.textContent = '—';
     }
 
     async function renderUsers() {
@@ -343,16 +353,29 @@
     function populateWalletSelect(){
       const s = document.getElementById('walletSelect');
       s.innerHTML = '<option value="">Не выбран</option>';
-      wallets.forEach(w => { const o = document.createElement('option'); o.value = w.id; o.textContent = w.icon + ' ' + w.name + ' (' + formatMoney(w.balance) + ')'; s.appendChild(o); });
+      wallets.forEach(w => { const o = document.createElement('option'); o.value = w.id; o.textContent = getWalletIcon(w.type) + ' ' + w.name + ' (' + formatMoney(w.balance) + ')'; s.appendChild(o); });
+      const rs = document.getElementById('walletReportWallet');
+      const curVal = rs.value;
+      rs.innerHTML = '<option value="">Все кошельки</option>';
+      wallets.forEach(w => { const o = document.createElement('option'); o.value = w.id; o.textContent = w.name; rs.appendChild(o); });
+      rs.value = curVal;
     }
 
-    function getWalletBalance(id) { const w = wallets.find(x => x.id === id); return w ? w.balance : 0; }
     function getWalletIcon(type) { return type === 'cash' ? '💵' : type === 'card' ? '💳' : type === 'account' ? '🏦' : '📦'; }
+    function getWalletTypeName(type) { return type === 'cash' ? 'Наличка' : type === 'card' ? 'Банковская карта' : type === 'account' ? 'Счёт' : 'Другое'; }
 
     function openWalletModal(id) {
       document.getElementById('walletModalTitle').textContent = id ? 'Редактировать кошелёк' : 'Новый кошелёк';
-      if (id) { const w = wallets.find(x => x.id === id); document.getElementById('walletName').value = w.name; document.getElementById('walletType').value = w.type; document.getElementById('walletBalance').value = w.balance; document.getElementById('walletBalance').dataset.edit = '1'; }
-      else { document.getElementById('walletName').value = ''; document.getElementById('walletType').value = 'cash'; document.getElementById('walletBalance').value = '0'; delete document.getElementById('walletBalance').dataset.edit; }
+      if (id) {
+        const w = wallets.find(x => x.id === id);
+        document.getElementById('walletName').value = w.name;
+        document.getElementById('walletType').value = w.type;
+        document.getElementById('walletBalance').value = w.balance;
+      } else {
+        document.getElementById('walletName').value = '';
+        document.getElementById('walletType').value = 'cash';
+        document.getElementById('walletBalance').value = '0';
+      }
       document.getElementById('walletModal').classList.add('active');
       document.getElementById('walletActions').style.display = 'flex';
       document.getElementById('walletName').dataset.editId = id || '';
@@ -366,19 +389,15 @@
       if (!name) return;
       if (editId) {
         const w = wallets.find(x => x.id === editId);
-        const oldBal = w.balance;
         w.name = name; w.type = type;
-        if (document.getElementById('walletBalance').dataset.edit === '1') {
-          const diff = balance - oldBal;
+        if (w.balance !== balance) {
+          await recordSnapshot(w.id, w.balance, 'Коррекция');
           w.balance = balance;
-          transactions.unshift({ id: Date.now(), type: diff >= 0 ? 'income' : 'expense', desc: 'Коррекция баланса', amount: Math.abs(diff), category: 'Перевод', date: new Date().toISOString().split('T')[0], walletId: w.id });
-          await saveData('transactions', transactions);
         }
       } else {
         wallets.push({ id: genId(), name, type, balance, createdAt: new Date().toISOString() });
       }
       await saveData('wallets', wallets);
-      await saveData('transactions', transactions);
       closeModalById('walletModal');
       populateWalletSelect(); renderWallets(); render();
     }
@@ -386,8 +405,50 @@
     async function deleteWallet(id) {
       if (!confirm('Удалить кошелёк?')) return;
       wallets = wallets.filter(w => w.id !== id);
+      walletSnapshots = walletSnapshots.filter(s => s.walletId !== id);
       await saveData('wallets', wallets);
+      await saveData('wallet_snapshots', walletSnapshots);
       populateWalletSelect(); renderWallets(); render();
+    }
+
+    function openWalletUpdateModal(id) {
+      const w = wallets.find(x => x.id === id);
+      document.getElementById('walletUpdateName').textContent = w.name + ' (текущий: ' + formatMoney(w.balance) + ')';
+      document.getElementById('walletUpdateBalance').value = w.balance;
+      document.getElementById('walletUpdateComment').value = '';
+      document.getElementById('walletUpdateBalance').dataset.walletId = id;
+      document.getElementById('walletUpdateModal').classList.add('active');
+      document.getElementById('walletUpdateActions').style.display = 'flex';
+    }
+
+    async function confirmWalletUpdate() {
+      const id = document.getElementById('walletUpdateBalance').dataset.walletId;
+      const newBal = parseFloat(document.getElementById('walletUpdateBalance').value);
+      const comment = document.getElementById('walletUpdateComment').value.trim() || 'Обновление';
+      if (isNaN(newBal)) return;
+      const w = wallets.find(x => x.id === id);
+      await recordSnapshot(w.id, w.balance, comment);
+      w.balance = newBal;
+      await saveData('wallets', wallets);
+      closeModalById('walletUpdateModal');
+      populateWalletSelect(); renderWallets(); render();
+    }
+
+    async function recordSnapshot(walletId, oldBalance, comment) {
+      const w = wallets.find(x => x.id === walletId);
+      if (!w) return;
+      walletSnapshots.push({ id: genId(), walletId, walletName: w.name, oldBalance, newBalance: w.balance, diff: w.balance - oldBalance, comment, date: new Date().toISOString() });
+      await saveData('wallet_snapshots', walletSnapshots);
+    }
+
+    function openWalletHistoryModal(id) {
+      const w = wallets.find(x => x.id === id);
+      document.getElementById('walletHistoryTitle').textContent = 'История: ' + w.name;
+      const snaps = walletSnapshots.filter(s => s.walletId === id).reverse();
+      const c = document.getElementById('walletHistoryContent');
+      if (snaps.length === 0) { c.innerHTML = '<div class="empty-state">Нет записей</div>'; }
+      else { c.innerHTML = `<table class="stat-table"><thead><tr><th>Дата</th><th>Баланс</th><th>Δ</th><th>Коммент</th></tr></thead><tbody>${snaps.map(s => { const pct = s.oldBalance !== 0 ? ((s.diff / Math.abs(s.oldBalance)) * 100).toFixed(1) : '—'; return `<tr><td>${new Date(s.date).toLocaleDateString('ru-RU')}</td><td>${formatMoney(s.newBalance)}</td><td class="${s.diff>=0?'clr-income':'clr-expense'}">${s.diff>=0?'+':''}${formatMoney(s.diff)} (${pct}%)</td><td style="font-size:12px;color:var(--text-secondary)">${s.comment}</td></tr>`; }).join('')}</tbody></table>`; }
+      document.getElementById('walletHistoryModal').classList.add('active');
     }
 
     function renderWallets() {
@@ -395,7 +456,32 @@
       const total = wallets.reduce((s, w) => s + w.balance, 0);
       document.getElementById('walletsTotalBalance').textContent = formatMoney(total);
       if (wallets.length === 0) { c.innerHTML = '<div class="empty-state">Нет кошельков. Нажмите «Создать»</div>'; return; }
-      c.innerHTML = wallets.map(w => `<div class="wallet-card"><div class="wallet-header"><div class="wallet-icon">${getWalletIcon(w.type)}</div><div class="wallet-info"><div class="wallet-name">${w.name}</div><div class="wallet-type">${w.type === 'cash' ? 'Наличка' : w.type === 'card' ? 'Банковская карта' : w.type === 'account' ? 'Счёт' : 'Другое'}</div></div><div class="wallet-balance ${w.balance >= 0 ? 'clr-income' : 'clr-expense'}">${formatMoney(w.balance)}</div><div class="wallet-actions"><button class="wallet-btn-edit" type="button" onclick="openWalletModal('${w.id}')">✎</button><button class="wallet-btn-del" type="button" onclick="deleteWallet('${w.id}')">✕</button></div></div></div>`).join('');
+      c.innerHTML = wallets.map(w => `<div class="wallet-card"><div class="wallet-header"><div class="wallet-icon">${getWalletIcon(w.type)}</div><div class="wallet-info"><div class="wallet-name">${w.name}</div><div class="wallet-type">${getWalletTypeName(w.type)}</div></div><div class="wallet-balance ${w.balance>=0?'clr-income':'clr-expense'}">${formatMoney(w.balance)}</div><div class="wallet-actions"><button class="wallet-btn-refresh" type="button" onclick="openWalletUpdateModal('${w.id}')" title="Обновить">↻</button><button class="wallet-btn-history" type="button" onclick="openWalletHistoryModal('${w.id}')" title="История">📊</button><button class="wallet-btn-edit" type="button" onclick="openWalletModal('${w.id}')" title="Редактировать">✎</button><button class="wallet-btn-del" type="button" onclick="deleteWallet('${w.id}')" title="Удалить">✕</button></div></div></div>`).join('');
+    }
+
+    function renderWalletReport() {
+      const walletId = document.getElementById('walletReportWallet').value;
+      const period = document.getElementById('walletReportPeriod').value;
+      const c = document.getElementById('walletReportContent');
+      let dateFrom, dateTo;
+      const now = new Date();
+      dateTo = now.toISOString().split('T')[0];
+      if (period === 'week') { dateFrom = new Date(now.getTime() - 7*24*60*60*1000).toISOString().split('T')[0]; }
+      else if (period === 'month') { dateFrom = new Date(now.getFullYear(), now.getMonth()-1, now.getDate()).toISOString().split('T')[0]; }
+      else { dateFrom = document.getElementById('walletReportDateFrom').value; dateTo = document.getElementById('walletReportDateTo').value || dateTo; }
+      if (!dateFrom) { c.innerHTML = '<div class="empty-state">Укажите дату начала</div>'; return; }
+      const snaps = walletSnapshots.filter(s => {
+        if (walletId && s.walletId !== walletId) return false;
+        return s.date >= dateFrom && s.date <= dateTo + 'T23:59:59';
+      });
+      if (snaps.length === 0) { c.innerHTML = '<div class="empty-state">Нет данных за период</div>'; return; }
+      const grouped = {};
+      snaps.forEach(s => { const k = s.walletId; if (!grouped[k]) grouped[k] = { name: s.walletName, oldBal: s.oldBalance, newBal: s.newBalance, diff: 0, pct: 0, snaps: [] }; grouped[k].diff += s.diff; grouped[k].newBal = s.newBalance; grouped[k].snaps.push(s); });
+      Object.values(grouped).forEach(g => { g.pct = g.oldBal !== 0 ? ((g.diff / Math.abs(g.oldBal)) * 100).toFixed(1) : '—'; });
+      let totalDiff = 0;
+      Object.values(grouped).forEach(g => totalDiff += g.diff);
+      const totalPct = totalDiff !== 0 ? ((totalDiff / Math.abs(Object.values(grouped).reduce((s,g)=>s+g.oldBal,0))) * 100).toFixed(1) : '—';
+      c.innerHTML = `<table class="stat-table"><thead><tr><th>Кошелёк</th><th>Было</th><th>Стало</th><th>Δ ₽</th><th>Δ %</th></tr></thead><tbody>${Object.entries(grouped).map(([id, g]) => `<tr><td>${g.name}</td><td>${formatMoney(g.oldBal)}</td><td>${formatMoney(g.newBal)}</td><td class="${g.diff>=0?'clr-income':'clr-expense'}">${g.diff>=0?'+':''}${formatMoney(g.diff)}</td><td class="${g.diff>=0?'clr-income':'clr-expense'}">${g.diff>=0?'+':''}${g.pct}%</td></tr>`).join('')}<tr class="stat-total"><td>Итого</td><td></td><td></td><td class="${totalDiff>=0?'clr-income':'clr-expense'}">${totalDiff>=0?'+':''}${formatMoney(totalDiff)}</td><td class="${totalDiff>=0?'clr-income':'clr-expense'}">${totalDiff>=0?'+':''}${totalPct}%</td></tr></tbody></table>`;
     }
 
     function openTransferModal() {
@@ -425,8 +511,10 @@
       if (!amount || amount <= 0) { alert('Введите сумму'); return; }
       const fw = wallets.find(w => w.id === fromId);
       if (fw.balance < amount) { alert('Недостаточно средств'); return; }
+      await recordSnapshot(fw.id, fw.balance, 'Перевод → ' + fw.name);
       fw.balance -= amount;
       const tw = wallets.find(w => w.id === toId);
+      await recordSnapshot(tw.id, tw.balance, 'Перевод ← ' + tw.name);
       tw.balance += amount;
       const desc = comment ? 'Перевод: ' + fw.name + ' → ' + tw.name + ' (' + comment + ')' : 'Перевод: ' + fw.name + ' → ' + tw.name;
       transactions.unshift({ id: Date.now(), type: 'transfer', desc, amount, category: 'Перевод', date, walletFrom: fromId, walletTo: toId });
@@ -509,7 +597,7 @@
       const allData = await dbGetAll('data');
       const allUsers = await dbGetAll('users');
       const allMeta = await dbGetAll('meta');
-      const payload = { version: 1, exportedAt: new Date().toISOString(), users: allUsers, data: allData, meta: allMeta };
+      const payload = { version: 2, exportedAt: new Date().toISOString(), users: allUsers, data: allData, meta: allMeta };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -526,9 +614,9 @@
         const text = await file.text();
         const payload = JSON.parse(text);
         if (!payload.users || !payload.data) { alert('Неверный формат файла'); return; }
-        for (const u of payload.users) { await dbPut('users', u); }
-        for (const d of payload.data) { await dbPut('data', d); }
-        if (payload.meta) { for (const m of payload.meta) { await dbPut('meta', m); } }
+        for (const u of payload.users) await dbPut('users', u);
+        for (const d of payload.data) await dbPut('data', d);
+        if (payload.meta) for (const m of payload.meta) await dbPut('meta', m);
         alert('Данные успешно импортированы');
         await loadData(); render(); renderWallets(); renderSettings(); populateWalletSelect();
       } catch(e) { alert('Ошибка импорта: ' + e.message); }
