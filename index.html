@@ -12,14 +12,9 @@
   <div id="loginScreen">
     <div class="login-card">
       <div class="login-logo">Бюджет</div>
-      <div class="login-subtitle" id="loginSubtitle">Вход в аккаунт</div>
-      <div id="loginFields">
-        <div class="form-group"><label>Телефон</label><input type="tel" id="loginPhone" placeholder="+7 999 123-45-67"></div>
-        <div class="form-group" id="loginPassGroup"><label>Пароль</label><input type="password" id="loginPass" placeholder="••••••"></div>
-      </div>
-      <div id="createPassField" class="form-group" style="display:none"><label>Придумайте пароль</label><input type="password" id="newPass" placeholder="Минимум 4 символа"></div>
+      <div class="login-subtitle">Введите пароль для входа</div>
+      <div class="form-group"><label>Пароль</label><input type="password" id="loginPass" placeholder="••••••"></div>
       <button class="add-btn" id="loginBtn" type="button" onclick="handleLogin()">Войти</button>
-      <button class="btn-forgot" type="button" onclick="openForgotPassword()" style="display:none">Забыли пароль?</button>
       <div class="login-note" id="loginNote"></div>
     </div>
   </div>
@@ -95,9 +90,8 @@
       <div class="page" id="page-projects"><div class="card-reports"><div class="debts-header"><div class="debts-title">Проекты</div><button class="add-btn btn-primary btn-sm" onclick="openProjectModal()">Создать проект</button></div><div id="projectsList"><div class="empty-state">Нет проектов</div></div></div></div>
 
       <div class="page" id="page-settings">
-        <div class="card-reports"><div class="settings-section"><div class="settings-title">Профиль</div><div class="settings-row"><span>Телефон</span><span class="settings-value" id="settingsPhone"></span></div><div class="settings-row"><span>Роль</span><span class="settings-value" id="settingsRole"></span></div><div class="settings-row"><span>Версия</span><span class="settings-value" id="settingsVersion"></span></div><div class="settings-row"><span>Тема</span><button class="add-btn" type="button" style="width:auto;padding:6px 14px;font-size:13px" onclick="toggleDark()">Сменить</button></div><button class="add-btn btn-danger" type="button" id="logoutBtn" style="max-width:200px;margin-top:12px">Выйти</button></div></div>
+        <div class="card-reports"><div class="settings-section"><div class="settings-title">Профиль</div><div class="settings-row"><span>Тема</span><button class="add-btn" type="button" style="width:auto;padding:6px 14px;font-size:13px" onclick="toggleDark()">Сменить</button></div><div class="settings-row"><span>Версия</span><span class="settings-value" id="settingsVersion"></span></div><div class="settings-row"><span>Последнее изменение</span><span class="settings-value" id="settingsLastChanged"></span></div><button class="add-btn btn-danger" type="button" id="logoutBtn" style="max-width:200px;margin-top:12px">Выйти</button></div></div>
         <div class="card-reports"><div class="settings-section"><div class="settings-title">База данных</div><div class="settings-row"><span>Экспорт данных</span><button class="add-btn" type="button" style="width:auto;padding:6px 14px;font-size:13px" onclick="exportDatabase()">Скачать JSON</button></div><div class="settings-row"><span>Импорт данных</span><button class="add-btn" type="button" style="width:auto;padding:6px 14px;font-size:13px" onclick="document.getElementById('importFile').click()">Загрузить JSON</button><input type="file" id="importFile" accept=".json" style="display:none" onchange="importDatabase(event)"></div></div></div>
-        <div class="card-reports" id="adminSection" style="display:none"><div class="settings-section"><div class="settings-title">Пользователи</div><div id="usersList"></div></div></div>
       </div>
     </div>
 
@@ -113,15 +107,15 @@
     <div class="modal-overlay" id="subgroupModal"><div class="modal"><div class="modal-title">Подгруппа</div><div class="modal-subtitle">Добавьте категорию</div><input type="hidden" id="subgroupProjectId"><div class="form-group"><label>Название</label><input type="text" id="subgroupName"></div><div class="form-group"><label>Бюджет</label><input type="number" id="subgroupBudget" placeholder="0" min="0"></div><div class="modal-actions" id="sgActions"><button class="btn-cancel" type="button" onclick="closeModalById('subgroupModal')">Отмена</button><button class="btn-confirm" type="button" onclick="saveSubgroup()">Создать</button></div></div></div>
     <div class="modal-overlay" id="projectTransModal"><div class="modal"><div class="modal-title">Запись</div><input type="hidden" id="ptProjectId"><input type="hidden" id="ptSubgroupId"><div class="form-group"><label>Тип</label><div class="type-toggle" style="margin-bottom:0"><button class="type-btn active-expense" id="ptBtnExpense" onclick="setPtType('expense')">Расход</button><button class="type-btn" id="ptBtnIncome" onclick="setPtType('income')">Доход</button></div></div><div class="form-group"><label>Описание</label><input type="text" id="ptDesc"></div><div class="form-group"><label>Сумма</label><input type="number" id="ptAmount" placeholder="0" min="0"></div><div class="form-group"><label>Дата</label><input type="date" id="ptDate"></div><div class="modal-actions" id="ptActions"><button class="btn-cancel" type="button" onclick="closeModalById('projectTransModal')">Отмена</button><button class="btn-confirm" type="button" onclick="saveProjectTrans()">Добавить</button></div></div></div>
     <div class="modal-overlay" id="projectDetailModal"><div class="modal modal-lg"><div class="debts-header"><div><div class="modal-title" id="pdTitle"></div><div class="modal-subtitle" id="pdSubtitle"></div></div><button class="btn-close-modal" type="button" onclick="closeModalById('projectDetailModal')">✕</button></div><div class="project-summary-grid" id="pdSummary"></div><div id="pdSubgroups"></div><div class="modal-actions" id="pdActions"><button class="btn-cancel" type="button" onclick="closeModalById('projectDetailModal')">Закрыть</button></div></div></div>
-    <div class="modal-overlay" id="forgotModal"><div class="modal"><div class="modal-title">Забыли пароль?</div><div class="modal-subtitle" id="forgotSubtitle">Введите ваш телефон для восстановления</div><div class="form-group"><label>Телефон</label><input type="tel" id="forgotPhone" placeholder="+7 999 123-45-67"></div><div id="forgotResult" style="display:none;margin-top:12px;padding:12px;background:rgba(0,120,212,0.08);border-radius:8px;font-size:14px;"></div><div class="modal-actions" id="forgotActions"><button class="btn-cancel" type="button" onclick="closeForgotPassword()">Закрыть</button><button class="btn-confirm" type="button" id="forgotFindBtn" onclick="findUserPassword()">Найти</button></div></div></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script>
-    const ADMIN_PHONE = '79539995588';
-    const ADMIN_PASS = '4686';
+    const APP_PASS = '4686';
+    const GIT_COMMIT = '__GIT_COMMIT__';
+    const GIT_DATE = '__GIT_DATE__';
     const DB_NAME = 'BudgetDB';
-    const DB_VERSION = 3;
+    const DB_VERSION = 4;
     let db = null;
 
     function openDB() {
@@ -129,8 +123,7 @@
         const req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onupgradeneeded = e => {
           const d = e.target.result;
-          if (!d.objectStoreNames.contains('users')) d.createObjectStore('users', { keyPath: 'phone' });
-          if (!d.objectStoreNames.contains('data')) { const s = d.createObjectStore('data', { keyPath: 'key' }); s.createIndex('phone', 'phone', { unique: false }); }
+          if (!d.objectStoreNames.contains('data')) d.createObjectStore('data', { keyPath: 'key' });
           if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta', { keyPath: 'key' });
         };
         req.onsuccess = e => { db = e.target.result; resolve(db); };
@@ -174,59 +167,48 @@
       });
     }
 
-    function sanitize(p) { return p.replace(/\D/g, ''); }
-    function fmtPhone(p) { const d=p.replace(/\D/g,''); return d.startsWith('7')&&d.length===11?'+7 '+d.slice(1,4)+' '+d.slice(4,7)+'-'+d.slice(7,9)+'-'+d.slice(9):p; }
-    function closeModalById(id) { document.getElementById(id).classList.remove('active'); }
-
-    async function migrateFromLocalStorage() {
+    async function migrateFromV3() {
       try {
-        const lsUsers = JSON.parse(localStorage.getItem('budget_users') || '{}');
-        if (Object.keys(lsUsers).length > 0) {
-          const existing = await dbGetAll('users');
-          const existingPhones = new Set(existing.map(u => u.phone));
-          for (const [phone, data] of Object.entries(lsUsers)) {
-            if (!existingPhones.has(phone)) await dbPut('users', { phone, ...data });
+        const items = await dbGetAll('data');
+        for (const item of items) {
+          if (item.key.startsWith('budget_') && item.key.indexOf('_', 8) !== -1) {
+            const newKey = item.key.substring(item.key.indexOf('_', 8) + 1);
+            await dbPut('data', { key: newKey, data: item.data });
+            await dbDelete('data', item.key);
           }
-          localStorage.removeItem('budget_users');
         }
       } catch(e) { console.warn('Migration skipped:', e); }
     }
 
-    let currentUser = null;
+    async function migrateLocalStorage() {
+      try {
+        const keys = ['transactions', 'categories', 'debts', 'projects', 'wallets', 'wallet_snapshots'];
+        for (const k of keys) {
+          const ls = localStorage.getItem('budget_' + k);
+          if (ls) {
+            const data = JSON.parse(ls);
+            await dbPut('data', { key: k, data });
+            localStorage.removeItem('budget_' + k);
+          }
+        }
+      } catch(e) { console.warn('LS migration skipped:', e); }
+    }
+
+    let loggedIn = false;
     let currentType = 'expense';
     let transactions = [], customCategories = {}, debts = [], projects = [], wallets = [], walletSnapshots = [];
 
     async function checkSession() {
       await openDB();
-      await migrateFromLocalStorage();
-      const s = localStorage.getItem('budget_session');
-      if (s) {
-        const u = await dbGet('users', s);
-        if (u) { currentUser = { phone: u.phone, isAdmin: u.isAdmin || false }; showApp(); return; }
-      }
-      showLogin();
+      await migrateLocalStorage();
+      await migrateFromV3();
+      if (localStorage.getItem('budget_logged_in') === '1') { loggedIn = true; showApp(); }
+      else showLogin();
     }
 
     function showLogin() {
       document.getElementById('loginScreen').style.display = 'flex';
       document.getElementById('appScreen').style.display = 'none';
-      const phone = document.getElementById('loginPhone').value.trim();
-      const clean = sanitize(phone);
-      checkUserExists(clean).then(exists => {
-        document.getElementById('loginPassGroup').style.display = exists ? 'block' : 'none';
-        document.getElementById('createPassField').style.display = exists ? 'none' : 'block';
-        document.getElementById('loginBtn').textContent = exists ? 'Войти' : 'Создать аккаунт';
-        document.getElementById('loginSubtitle').textContent = exists ? 'Введите пароль' : 'Регистрация нового аккаунта';
-        document.getElementById('loginNote').textContent = exists ? '' : 'Минимум 4 символа для пароля';
-        document.querySelector('.btn-forgot').style.display = exists ? 'block' : 'none';
-      });
-    }
-
-    async function checkUserExists(phone) {
-      if (phone.length < 11) return false;
-      if (phone === ADMIN_PHONE) return true;
-      const u = await dbGet('users', phone);
-      return !!u;
     }
 
     function showApp() {
@@ -236,56 +218,29 @@
       document.getElementById('date').valueAsDate = new Date();
       document.getElementById('debtDate').valueAsDate = new Date();
       document.getElementById('transferDate').valueAsDate = new Date();
-      updateLastChanged();
       populateCategories(); render(); renderSettings();
     }
 
-    async function handleLogin() {
-      const phone = document.getElementById('loginPhone').value.trim();
-      const clean = sanitize(phone);
-      if (clean.length < 11) { alert('Введите корректный номер'); return; }
-      if (clean === ADMIN_PHONE) {
-        const pass = document.getElementById('loginPass').value;
-        if (pass !== ADMIN_PASS) { alert('Неверный пароль'); return; }
-        const existing = await dbGet('users', ADMIN_PHONE);
-        if (!existing) await dbPut('users', { phone: ADMIN_PHONE, pass: ADMIN_PASS, isAdmin: true, createdAt: new Date().toISOString() });
-        else if (!existing.isAdmin) await dbPut('users', { ...existing, isAdmin: true });
-        localStorage.setItem('budget_session', ADMIN_PHONE);
-        currentUser = { phone: ADMIN_PHONE, isAdmin: true };
-        showApp(); return;
-      }
-      const exists = await dbGet('users', clean);
-      if (!exists) {
-        const pass = document.getElementById('newPass').value;
-        if (pass.length < 4) { alert('Пароль минимум 4 символа'); return; }
-        await dbPut('users', { phone: clean, pass, createdAt: new Date().toISOString(), isAdmin: false });
-        localStorage.setItem('budget_session', clean);
-        currentUser = { phone: clean, isAdmin: false };
-        showApp(); return;
-      }
+    function handleLogin() {
       const pass = document.getElementById('loginPass').value;
-      if (pass !== exists.pass) { alert('Неверный пароль'); return; }
-      localStorage.setItem('budget_session', clean);
-      currentUser = { phone: clean, isAdmin: exists.isAdmin || false };
+      if (pass !== APP_PASS) { document.getElementById('loginNote').textContent = 'Неверный пароль'; return; }
+      localStorage.setItem('budget_logged_in', '1');
+      loggedIn = true;
+      document.getElementById('loginNote').textContent = '';
       showApp();
     }
 
     function handleLogout() {
-      localStorage.removeItem('budget_session');
-      currentUser = null;
-      document.getElementById('loginPhone').value = '';
+      localStorage.removeItem('budget_logged_in');
+      loggedIn = false;
       document.getElementById('loginPass').value = '';
-      document.getElementById('newPass').value = '';
       showLogin();
     }
 
-    document.getElementById('loginPhone').addEventListener('input', function() { showLogin(); });
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('loginPass').addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
-      document.getElementById('newPass').addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
       document.getElementById('logoutBtn').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); handleLogout(); return false; });
       document.getElementById('newCategoryInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') addCategory(); });
-      document.getElementById('forgotPhone').addEventListener('input', function() { document.getElementById('forgotResult').style.display = 'none'; });
       document.getElementById('walletReportPeriod').addEventListener('change', function() {
         document.getElementById('walletReportDateWrap').style.display = this.value === 'custom' ? 'flex' : 'none';
       });
@@ -294,52 +249,59 @@
     function toggleDark() { document.body.classList.toggle('dark'); localStorage.setItem('budget_dark', document.body.classList.contains('dark') ? '1' : ''); document.getElementById('darkToggle').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙'; }
     if (localStorage.getItem('budget_dark')) document.body.classList.add('dark');
 
-    function uKey(k) { return 'budget_' + currentUser.phone + '_' + k; }
+    function uKey(k) { return 'budget_' + k; }
 
     async function loadData() {
       try {
-        const tx = db.transaction('data', 'readonly');
-        const req = tx.objectStore('data').index('phone').getAll(currentUser.phone);
-        req.onsuccess = () => {
-          transactions = []; customCategories = {}; debts = []; projects = []; wallets = []; walletSnapshots = [];
-          req.result.forEach(item => {
-            if (item.key.endsWith('_transactions')) transactions = item.data;
-            else if (item.key.endsWith('_categories')) customCategories = item.data;
-            else if (item.key.endsWith('_debts')) debts = item.data;
-            else if (item.key.endsWith('_projects')) projects = item.data;
-            else if (item.key.endsWith('_wallets')) wallets = item.data;
-            else if (item.key.endsWith('_wallet_snapshots')) walletSnapshots = item.data;
-          });
-          populateWalletSelect(); renderWallets();
-        };
+        const items = await dbGetAll('data');
+        transactions = []; customCategories = {}; debts = []; projects = []; wallets = []; walletSnapshots = [];
+        items.forEach(item => {
+          if (item.key.endsWith('_transactions')) transactions = item.data;
+          else if (item.key.endsWith('_categories')) customCategories = item.data;
+          else if (item.key.endsWith('_debts')) debts = item.data;
+          else if (item.key.endsWith('_projects')) projects = item.data;
+          else if (item.key.endsWith('_wallets')) wallets = item.data;
+          else if (item.key.endsWith('_wallet_snapshots')) walletSnapshots = item.data;
+        });
+        populateWalletSelect(); renderWallets();
       } catch(e) { console.error('Load error:', e); }
     }
 
     async function saveData(k, d) {
-      await dbPut('data', { key: uKey(k), phone: currentUser.phone, data: d });
+      await dbPut('data', { key: uKey(k), data: d });
       updateLastChanged();
     }
 
     function updateLastChanged() { dbPut('meta', { key: 'last_changed', ts: Date.now() }); }
     function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+    function closeModalById(id) { document.getElementById(id).classList.remove('active'); }
 
     function switchTab(tab) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('page-'+tab).classList.add('active'); if(event&&event.target) event.target.classList.add('active'); if(tab==='wallets') { renderWallets(); renderWalletReport(); } if(tab==='reports') renderReports(); if(tab==='debts') renderDebts(); if(tab==='projects') renderProjects(); if(tab==='settings') renderSettings(); }
 
-    function renderSettings() { document.getElementById('settingsPhone').textContent = fmtPhone(currentUser.phone); document.getElementById('settingsRole').textContent = currentUser.isAdmin ? 'Администратор' : 'Пользователь'; updateSettingsVersion(); if(currentUser.isAdmin){ document.getElementById('adminSection').style.display='block'; renderUsers(); } else { document.getElementById('adminSection').style.display='none'; } if(!window._versionInterval) window._versionInterval = setInterval(updateSettingsVersion, 1000); }
+    function renderSettings() { renderGitVersion(); renderLastChanged(); }
 
-    async function updateSettingsVersion() {
-      const meta = await dbGet('meta', 'last_changed');
+    function renderGitVersion() {
       const el = document.getElementById('settingsVersion');
-      if(meta && meta.ts) { const d = new Date(meta.ts); el.textContent = d.toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
-      else el.textContent = '—';
+      if (GIT_COMMIT !== '__GIT_COMMIT__' && GIT_DATE !== '__GIT_DATE__') {
+        const d = new Date(GIT_DATE);
+        el.textContent = GIT_COMMIT.substring(0, 7) + ' · ' + d.toLocaleDateString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric'});
+      } else {
+        el.textContent = '—';
+      }
     }
 
-    async function renderUsers() {
-      const users = await dbGetAll('users');
-      const c = document.getElementById('usersList');
-      const sorted = users.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
-      if(sorted.length === 0){ c.innerHTML='<div class="empty-state">Нет пользователей</div>'; return; }
-      c.innerHTML = sorted.map(u => `<div class="user-card"><div class="user-phone">${fmtPhone(u.phone)}</div><div class="user-meta">Роль: <b>${u.isAdmin?'Админ':'Пользователь'}</b> · Пароль: <b class="user-pass">${u.pass||'—'}</b> · С: ${u.createdAt ? new Date(u.createdAt).toLocaleDateString('ru-RU') : '—'}</div></div>`).join('');
+    function renderLastChanged() {
+      dbGet('meta', 'last_changed').then(meta => {
+        const el = document.getElementById('settingsLastChanged');
+        if (meta && meta.ts) { const d = new Date(meta.ts); el.textContent = d.toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+        else el.textContent = '—';
+      });
+      if (!window._lastChangedInterval) window._lastChangedInterval = setInterval(() => {
+        dbGet('meta', 'last_changed').then(meta => {
+          const el = document.getElementById('settingsLastChanged');
+          if (meta && meta.ts) { const d = new Date(meta.ts); el.textContent = d.toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+        });
+      }, 1000);
     }
 
     function getDefaultCats(t){return t==='expense'?['Еда','Транспорт','Жильё','Развлечения','Здоровье','Одежда','Долги','Другое']:['Зарплата','Фриланс','Инвестиции','Другое'];}
@@ -580,24 +542,10 @@
     function closeModal(){document.getElementById('ocrModal').classList.remove('active');ocrExtracted=[];}
     function confirmReceipt(){const d=document.getElementById('date').value||new Date().toISOString().split('T')[0];for(const item of ocrExtracted){if(item.amount&&item.amount>0)transactions.unshift({id:Date.now()+Math.random(),type:'expense',desc:item.desc||'Чек',amount:parseFloat(item.amount),category:item.category||'Еда',date:d});}saveData('transactions',transactions);render();closeModal();}
 
-    function openForgotPassword() { document.getElementById('forgotPhone').value = document.getElementById('loginPhone').value; document.getElementById('forgotResult').style.display = 'none'; document.getElementById('forgotModal').classList.add('active'); document.getElementById('forgotActions').style.display = 'flex'; }
-    function closeForgotPassword() { closeModalById('forgotModal'); }
-    async function findUserPassword() {
-      const phone = document.getElementById('forgotPhone').value.trim();
-      const clean = sanitize(phone);
-      const res = document.getElementById('forgotResult');
-      if (clean.length < 11) { res.style.display = 'block'; res.innerHTML = '<span style="color:#d13438">Введите корректный номер</span>'; return; }
-      if (clean === ADMIN_PHONE) { res.style.display = 'block'; res.innerHTML = 'Пароль администратора: <b>' + ADMIN_PASS + '</b>'; return; }
-      const user = await dbGet('users', clean);
-      if (user && user.pass) { res.style.display = 'block'; res.innerHTML = 'Телефон: <b>' + fmtPhone(clean) + '</b><br>Пароль: <b>' + user.pass + '</b>'; }
-      else { res.style.display = 'block'; res.innerHTML = '<span style="color:#d13438">Пользователь не найден</span>'; }
-    }
-
     async function exportDatabase() {
       const allData = await dbGetAll('data');
-      const allUsers = await dbGetAll('users');
       const allMeta = await dbGetAll('meta');
-      const payload = { version: 2, exportedAt: new Date().toISOString(), users: allUsers, data: allData, meta: allMeta };
+      const payload = { version: 3, exportedAt: new Date().toISOString(), data: allData, meta: allMeta };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -613,8 +561,7 @@
       try {
         const text = await file.text();
         const payload = JSON.parse(text);
-        if (!payload.users || !payload.data) { alert('Неверный формат файла'); return; }
-        for (const u of payload.users) await dbPut('users', u);
+        if (!payload.data) { alert('Неверный формат файла'); return; }
         for (const d of payload.data) await dbPut('data', d);
         if (payload.meta) for (const m of payload.meta) await dbPut('meta', m);
         alert('Данные успешно импортированы');
