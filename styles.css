@@ -493,12 +493,22 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
 .subgroup-trans-amount.income { color: var(--green); }
 .subgroup-trans-amount.expense { color: var(--red); }
 
+/* Bottom Navigation (mobile app style) */
+.bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; background: var(--bg-card); border-top: 1px solid var(--border); padding: 6px 0 env(safe-area-inset-bottom, 6px); box-shadow: 0 -2px 12px rgba(0,0,0,0.08); }
+.bottom-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: none; background: transparent; color: var(--text-secondary); font-family: inherit; cursor: pointer; padding: 6px 4px; transition: all 0.15s; position: relative; }
+.bottom-nav-btn.active { color: var(--accent); }
+.bottom-nav-btn.active::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 32px; height: 2px; background: var(--accent); border-radius: 1px; }
+.bottom-nav-btn .tab-icon { font-size: 24px; line-height: 1; order: 1; }
+.bottom-nav-btn .tab-label { font-size: 11px; order: 2; white-space: nowrap; }
+
 @media (max-width: 768px) {
   * { -webkit-tap-highlight-color: transparent; }
   body { padding: 8px; }
   .container { max-width: 100%; }
   .page-header { flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 6px; }
   h1 { font-size: 22px; margin-bottom: 4px; }
+  .bottom-nav { display: flex; }
+  .container { padding-bottom: 80px; }
   .tabs { width: 100%; margin-bottom: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
   .tabs + .tabs { margin-top: 2px; }
   .tabs + .tabs .tab-btn { grid-column: span 2; }
@@ -622,6 +632,8 @@ input:focus, select:focus { border-color: var(--accent); border-bottom-color: va
   .type-btn { padding: 9px; font-size: 13px; }
   .debt-name { font-size: 14px; }
   .debt-amount { font-size: 16px; }
+  .bottom-nav-btn .tab-icon { font-size: 22px; }
+  .bottom-nav-btn .tab-label { font-size: 10px; }
   .project-card-stats { gap: 8px; }
   .proj-stat { min-width: 70px; }
   .proj-stat-value { font-size: 14px; }
