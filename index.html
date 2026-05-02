@@ -19,6 +19,7 @@
       </div>
       <div id="createPassField" class="form-group" style="display:none"><label>Придумайте пароль</label><input type="password" id="newPass" placeholder="Минимум 4 символа"></div>
       <button class="add-btn" id="loginBtn" type="button" onclick="handleLogin()">Войти</button>
+      <button class="btn-forgot" type="button" onclick="openForgotPassword()" style="display:none;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:13px;margin-top:8px;width:100%;padding:8px;">Забыли пароль?</button>
       <div class="login-note" id="loginNote"></div>
     </div>
   </div>
@@ -78,26 +79,104 @@
     <div class="modal-overlay" id="subgroupModal"><div class="modal"><div class="modal-title">Подгруппа</div><div class="modal-subtitle">Добавьте категорию</div><input type="hidden" id="subgroupProjectId"><div class="form-group"><label>Название</label><input type="text" id="subgroupName"></div><div class="form-group"><label>Бюджет</label><input type="number" id="subgroupBudget" placeholder="0" min="0"></div><div class="modal-actions" id="sgActions"><button class="btn-cancel" type="button" onclick="closeModalById('subgroupModal')">Отмена</button><button class="btn-confirm" type="button" onclick="saveSubgroup()">Создать</button></div></div></div>
     <div class="modal-overlay" id="projectTransModal"><div class="modal"><div class="modal-title">Запись</div><input type="hidden" id="ptProjectId"><input type="hidden" id="ptSubgroupId"><div class="form-group"><label>Тип</label><div class="type-toggle" style="margin-bottom:0"><button class="type-btn active-expense" id="ptBtnExpense" onclick="setPtType('expense')">Расход</button><button class="type-btn" id="ptBtnIncome" onclick="setPtType('income')">Доход</button></div></div><div class="form-group"><label>Описание</label><input type="text" id="ptDesc"></div><div class="form-group"><label>Сумма</label><input type="number" id="ptAmount" placeholder="0" min="0"></div><div class="form-group"><label>Дата</label><input type="date" id="ptDate"></div><div class="modal-actions" id="ptActions"><button class="btn-cancel" type="button" onclick="closeModalById('projectTransModal')">Отмена</button><button class="btn-confirm" type="button" onclick="saveProjectTrans()">Добавить</button></div></div></div>
     <div class="modal-overlay" id="projectDetailModal"><div class="modal modal-lg"><div class="debts-header"><div><div class="modal-title" id="pdTitle"></div><div class="modal-subtitle" id="pdSubtitle"></div></div><button class="btn-close-modal" type="button" onclick="closeModalById('projectDetailModal')">✕</button></div><div class="project-summary-grid" id="pdSummary"></div><div id="pdSubgroups"></div><div class="modal-actions" id="pdActions"><button class="btn-cancel" type="button" onclick="closeModalById('projectDetailModal')">Закрыть</button></div></div></div>
+    <div class="modal-overlay" id="forgotModal"><div class="modal"><div class="modal-title">Забыли пароль?</div><div class="modal-subtitle" id="forgotSubtitle">Введите ваш телефон для восстановления</div><div class="form-group"><label>Телефон</label><input type="tel" id="forgotPhone" placeholder="+7 999 123-45-67"></div><div id="forgotResult" style="display:none;margin-top:12px;padding:12px;background:rgba(0,120,212,0.08);border-radius:8px;font-size:14px;"></div><div class="modal-actions" id="forgotActions"><button class="btn-cancel" type="button" onclick="closeForgotPassword()">Закрыть</button><button class="btn-confirm" type="button" id="forgotFindBtn" onclick="findUserPassword()">Найти</button></div></div></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script>
     const ADMIN_PHONE = '79539995588';
     const ADMIN_PASS = '4686';
+    const DB_NAME = 'BudgetDB';
+    const DB_VERSION = 1;
+    let db = null;
 
-    function getUsers() { try { return JSON.parse(localStorage.getItem('budget_users') || '{}'); } catch { return {}; } }
-    function saveUsers(u) { localStorage.setItem('budget_users', JSON.stringify(u)); localStorage.setItem('budget_last_changed', Date.now().toString()); }
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = e => {
+          const d = e.target.result;
+          if (!d.objectStoreNames.contains('users')) d.createObjectStore('users', { keyPath: 'phone' });
+          if (!d.objectStoreNames.contains('data')) { const s = d.createObjectStore('data', { keyPath: 'key' }); s.createIndex('phone', 'phone', { unique: false }); }
+          if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta', { keyPath: 'key' });
+        };
+        req.onsuccess = e => { db = e.target.result; resolve(db); };
+        req.onerror = e => reject(e.target.error);
+      });
+    }
+
+    function dbPut(store, val) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readwrite');
+        tx.objectStore(store).put(val);
+        tx.oncomplete = () => resolve();
+        tx.onerror = e => reject(e.target.error);
+      });
+    }
+
+    function dbGet(store, key) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readonly');
+        const req = tx.objectStore(store).get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = e => reject(e.target.error);
+      });
+    }
+
+    function dbGetAll(store) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readonly');
+        const req = tx.objectStore(store).getAll();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = e => reject(e.target.error);
+      });
+    }
+
+    function dbDelete(store, key) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readwrite');
+        tx.objectStore(store).delete(key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = e => reject(e.target.error);
+      });
+    }
+
     function sanitize(p) { return p.replace(/\D/g, ''); }
     function fmtPhone(p) { const d=p.replace(/\D/g,''); return d.startsWith('7')&&d.length===11?'+7 '+d.slice(1,4)+' '+d.slice(4,7)+'-'+d.slice(7,9)+'-'+d.slice(9):p; }
     function closeModalById(id) { document.getElementById(id).classList.remove('active'); }
 
-    let currentUser = null;
+    async function migrateFromLocalStorage() {
+      try {
+        const lsUsers = JSON.parse(localStorage.getItem('budget_users') || '{}');
+        if (Object.keys(lsUsers).length > 0) {
+          const existing = await dbGetAll('users');
+          const existingPhones = new Set(existing.map(u => u.phone));
+          for (const [phone, data] of Object.entries(lsUsers)) {
+            if (!existingPhones.has(phone)) {
+              await dbPut('users', { phone, ...data });
+            }
+          }
+          localStorage.removeItem('budget_users');
+        }
+        const session = localStorage.getItem('budget_session');
+        if (session && !localStorage.getItem('budget_db_migrated')) {
+          localStorage.setItem('budget_db_migrated', '1');
+        }
+      } catch(e) { console.warn('Migration skipped:', e); }
+    }
 
-    function checkSession() {
+    let currentUser = null;
+    let currentType = 'expense';
+    let transactions = [], customCategories = {}, debts = [], projects = [];
+
+    async function checkSession() {
+      await openDB();
+      await migrateFromLocalStorage();
       const s = localStorage.getItem('budget_session');
-      const u = getUsers();
-      if (s && u[s]) { currentUser = { phone: s, isAdmin: u[s].isAdmin }; showApp(); }
-      else showLogin();
+      if (s) {
+        const u = await dbGet('users', s);
+        if (u) { currentUser = { phone: u.phone, isAdmin: u.isAdmin || false }; showApp(); return; }
+      }
+      showLogin();
     }
 
     function showLogin() {
@@ -105,13 +184,22 @@
       document.getElementById('appScreen').style.display = 'none';
       const phone = document.getElementById('loginPhone').value.trim();
       const clean = sanitize(phone);
-      const users = getUsers();
-      const exists = clean.length >= 11 && users[clean];
-      document.getElementById('loginPassGroup').style.display = exists ? 'block' : 'none';
-      document.getElementById('createPassField').style.display = exists ? 'none' : 'block';
-      document.getElementById('loginBtn').textContent = exists ? 'Войти' : 'Создать аккаунт';
-      document.getElementById('loginSubtitle').textContent = exists ? 'Введите пароль' : 'Регистрация нового аккаунта';
-      document.getElementById('loginNote').textContent = exists ? '' : 'Минимум 4 символа для пароля';
+      checkUserExists(clean).then(exists => {
+        document.getElementById('loginPassGroup').style.display = exists ? 'block' : 'none';
+        document.getElementById('createPassField').style.display = exists ? 'none' : 'block';
+        document.getElementById('loginBtn').textContent = exists ? 'Войти' : 'Создать аккаунт';
+        document.getElementById('loginSubtitle').textContent = exists ? 'Введите пароль' : 'Регистрация нового аккаунта';
+        document.getElementById('loginNote').textContent = exists ? '' : 'Минимум 4 символа для пароля';
+        document.getElementById('forgotBtn') || (document.getElementById('loginBtn').insertAdjacentHTML('afterend', ''));
+        document.querySelector('.btn-forgot').style.display = exists ? 'block' : 'none';
+      });
+    }
+
+    async function checkUserExists(phone) {
+      if (phone.length < 11) return false;
+      if (phone === ADMIN_PHONE) return true;
+      const u = await dbGet('users', phone);
+      return !!u;
     }
 
     function showApp() {
@@ -120,11 +208,11 @@
       loadData();
       document.getElementById('date').valueAsDate = new Date();
       document.getElementById('debtDate').valueAsDate = new Date();
-      localStorage.setItem('budget_last_changed', Date.now().toString());
+      updateLastChanged();
       populateCategories(); render(); renderSettings();
     }
 
-    function handleLogin() {
+    async function handleLogin() {
       const phone = document.getElementById('loginPhone').value.trim();
       const clean = sanitize(phone);
       if (clean.length < 11) { alert('Введите корректный номер'); return; }
@@ -132,21 +220,23 @@
       if (clean === ADMIN_PHONE) {
         const pass = document.getElementById('loginPass').value;
         if (pass !== ADMIN_PASS) { alert('Неверный пароль'); return; }
-        const u = getUsers();
-        if (!u[ADMIN_PHONE]) { u[ADMIN_PHONE] = { phone: fmtPhone(clean), isAdmin: true, createdAt: new Date().toISOString() }; saveUsers(u); }
+        const existing = await dbGet('users', ADMIN_PHONE);
+        if (!existing) {
+          await dbPut('users', { phone: ADMIN_PHONE, pass: ADMIN_PASS, isAdmin: true, createdAt: new Date().toISOString() });
+        } else if (!existing.isAdmin) {
+          await dbPut('users', { ...existing, isAdmin: true });
+        }
         localStorage.setItem('budget_session', ADMIN_PHONE);
         currentUser = { phone: ADMIN_PHONE, isAdmin: true };
         showApp(); return;
       }
 
-      const users = getUsers();
-      const exists = users[clean];
+      const exists = await dbGet('users', clean);
 
       if (!exists) {
         const pass = document.getElementById('newPass').value;
         if (pass.length < 4) { alert('Пароль минимум 4 символа'); return; }
-        users[clean] = { phone: fmtPhone(clean), pass: pass, createdAt: new Date().toISOString(), isAdmin: false };
-        saveUsers(users);
+        await dbPut('users', { phone: clean, pass: pass, createdAt: new Date().toISOString(), isAdmin: false });
         localStorage.setItem('budget_session', clean);
         currentUser = { phone: clean, isAdmin: false };
         showApp(); return;
@@ -155,7 +245,7 @@
       const pass = document.getElementById('loginPass').value;
       if (pass !== exists.pass) { alert('Неверный пароль'); return; }
       localStorage.setItem('budget_session', clean);
-      currentUser = { phone: clean, isAdmin: exists.isAdmin };
+      currentUser = { phone: clean, isAdmin: exists.isAdmin || false };
       showApp();
     }
 
@@ -174,23 +264,68 @@
       document.getElementById('newPass').addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
       document.getElementById('logoutBtn').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); handleLogout(); return false; });
       document.getElementById('newCategoryInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') addCategory(); });
+      document.getElementById('forgotPhone').addEventListener('input', function() {
+        document.getElementById('forgotResult').style.display = 'none';
+      });
     });
 
     function toggleDark() { document.body.classList.toggle('dark'); localStorage.setItem('budget_dark', document.body.classList.contains('dark') ? '1' : ''); document.getElementById('darkToggle').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙'; }
     if (localStorage.getItem('budget_dark')) { document.body.classList.add('dark'); }
 
-    let currentType = 'expense';
-    let transactions = [], customCategories = {}, debts = [], projects = [];
     function uKey(k) { return 'budget_' + currentUser.phone + '_' + k; }
-    function loadData() { transactions=JSON.parse(localStorage.getItem(uKey('transactions'))||'[]'); customCategories=JSON.parse(localStorage.getItem(uKey('categories'))||'{}'); debts=JSON.parse(localStorage.getItem(uKey('debts'))||'[]'); projects=JSON.parse(localStorage.getItem(uKey('projects'))||'[]'); }
-    function saveData(k,d) { localStorage.setItem(uKey(k), JSON.stringify(d)); localStorage.setItem('budget_last_changed', Date.now().toString()); }
+
+    async function loadData() {
+      try {
+        const tx = db.transaction('data', 'readonly');
+        const req = tx.objectStore('data').index('phone').getAll(currentUser.phone);
+        req.onsuccess = () => {
+          transactions = []; customCategories = {}; debts = []; projects = [];
+          req.result.forEach(item => {
+            if (item.key.endsWith('_transactions')) transactions = item.data;
+            else if (item.key.endsWith('_categories')) customCategories = item.data;
+            else if (item.key.endsWith('_debts')) debts = item.data;
+            else if (item.key.endsWith('_projects')) projects = item.data;
+          });
+        };
+      } catch(e) { console.error('Load error:', e); }
+    }
+
+    async function saveData(k, d) {
+      const key = uKey(k);
+      await dbPut('data', { key, phone: currentUser.phone, data: d });
+      updateLastChanged();
+    }
+
+    function updateLastChanged() { dbPut('meta', { key: 'last_changed', ts: Date.now() }); }
+
     function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
     function switchTab(tab) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('page-'+tab).classList.add('active'); if(event&&event.target) event.target.classList.add('active'); if(tab==='reports') renderReports(); if(tab==='debts') renderDebts(); if(tab==='projects') renderProjects(); if(tab==='settings') renderSettings(); }
 
-    function renderSettings() { document.getElementById('settingsPhone').textContent = currentUser.phone; document.getElementById('settingsRole').textContent = currentUser.isAdmin ? 'Администратор' : 'Пользователь'; updateSettingsVersion(); if(currentUser.isAdmin){ document.getElementById('adminSection').style.display='block'; renderUsers(); } else { document.getElementById('adminSection').style.display='none'; } if(!window._versionInterval){ window._versionInterval = setInterval(updateSettingsVersion, 1000); } }
-    function updateSettingsVersion() { const ts = localStorage.getItem('budget_last_changed'); const el = document.getElementById('settingsVersion'); if(ts) { const d = new Date(parseInt(ts)); el.textContent = d.toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); } else { el.textContent = '—'; } }
-    function renderUsers() { const u=getUsers(), c=document.getElementById('usersList'), e=Object.entries(u).sort((a,b)=>b[1].createdAt.localeCompare(a[1].createdAt)); if(e.length===0){c.innerHTML='<div class="empty-state">Нет пользователей</div>';return;} c.innerHTML=e.map(([p,x])=>`<div class="user-card"><div class="user-phone">${x.phone||p}</div><div class="user-meta">Роль: <b>${x.isAdmin?'Админ':'Пользователь'}</b> · С: ${new Date(x.createdAt).toLocaleDateString('ru-RU')}</div></div>`).join(''); }
+    function renderSettings() { document.getElementById('settingsPhone').textContent = fmtPhone(currentUser.phone); document.getElementById('settingsRole').textContent = currentUser.isAdmin ? 'Администратор' : 'Пользователь'; updateSettingsVersion(); if(currentUser.isAdmin){ document.getElementById('adminSection').style.display='block'; renderUsers(); } else { document.getElementById('adminSection').style.display='none'; } if(!window._versionInterval){ window._versionInterval = setInterval(updateSettingsVersion, 1000); } }
+
+    async function updateSettingsVersion() {
+      const meta = await dbGet('meta', 'last_changed');
+      const el = document.getElementById('settingsVersion');
+      if(meta && meta.ts) { const d = new Date(meta.ts); el.textContent = d.toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); } else { el.textContent = '—'; }
+    }
+
+    async function renderUsers() {
+      const users = await dbGetAll('users');
+      const c = document.getElementById('usersList');
+      const sorted = users.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+      if(sorted.length === 0){ c.innerHTML='<div class="empty-state">Нет пользователей</div>'; return; }
+      c.innerHTML = sorted.map(u => `
+        <div class="user-card">
+          <div class="user-phone">${fmtPhone(u.phone)}</div>
+          <div class="user-meta">
+            Роль: <b>${u.isAdmin?'Админ':'Пользователь'}</b> ·
+            Пароль: <b class="user-pass">${u.pass||'—'}</b> ·
+            С: ${u.createdAt ? new Date(u.createdAt).toLocaleDateString('ru-RU') : '—'}
+          </div>
+        </div>
+      `).join('');
+    }
 
     function getDefaultCats(t){return t==='expense'?['Еда','Транспорт','Жильё','Развлечения','Здоровье','Одежда','Долги','Другое']:['Зарплата','Фриланс','Инвестиции','Другое'];}
     function getAllCats(t){return[...getDefaultCats(t),...(customCategories[t]||[])];}
@@ -200,7 +335,7 @@
     function hideCategoryInput(){document.getElementById('categoryInputWrap').classList.remove('visible');document.getElementById('newCategoryInput').value='';}
     function addCategory(){const n=document.getElementById('newCategoryInput').value.trim();if(!n||getAllCats(currentType).includes(n))return;if(!customCategories[currentType])customCategories[currentType]=[];customCategories[currentType].push(n);saveData('categories',customCategories);populateCategories();document.getElementById('category').value=n;hideCategoryInput();}
 
-    function renderReports(){ const per=document.getElementById('reportPeriod').value, c=document.getElementById('reportContent'), now=new Date(), dy=now.getFullYear(), dm=String(now.getMonth()+1).padStart(2,'0'); if(!document.getElementById('reportYear').value) document.getElementById('reportYear').value=dy; if(!document.getElementById('reportMonth').value) document.getElementById('reportMonth').value=dy+'-'+dm; const sy=parseInt(document.getElementById('reportYear').value), sm=document.getElementById('reportMonth').value; let f=[...transactions]; if(per==='years') f=f.filter(t=>new Date(t.date).getFullYear()===sy); else if(per==='months') f=f.filter(t=>t.date&&t.date.startsWith(sm)); const g={}; f.forEach(t=>{let k=per==='days'?t.date:per==='months'?(t.date?t.date.slice(0,7):''):(t.date?new Date(t.date).getFullYear().toString():'');if(!g[k])g[k]={i:0,e:0};if(t.type==='income')g[k].i+=t.amount;else g[k].e+=t.amount;}); const keys=Object.keys(g).sort((a,b)=>b.localeCompare(a)); if(keys.length===0){c.innerHTML='<div class="empty-state">Нет данных</div>';return;} let ti=0,te=0,r=''; keys.forEach(k=>{const d=g[k],b=d.i-d.e;ti+=d.i;te+=d.e;let l=per==='days'?new Date(k+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}):per==='months'?new Date(k.split('-')[0],k.split('-')[1]-1).toLocaleDateString('ru-RU',{month:'long',year:'numeric'}):k;r+=`<tr><td>${l}</td><td class="stat-income">${formatMoney(d.i)}</td><td class="stat-expense">${formatMoney(d.e)}</td><td class="${b>=0?'stat-balance-pos':'stat-balance-neg'}">${b>=0?'+':''}${formatMoney(b)}</td></tr>`;}); const tb=ti-te; c.innerHTML=`<table class="stat-table"><thead><tr><th>Период</th><th>Доходы</th><th>Расходы</th><th>Баланс</th></tr></thead><tbody>${r}<tr class="stat-total"><td>Итого</td><td class="stat-income">${formatMoney(ti)}</td><td class="stat-expense">${formatMoney(te)}</td><td class="${tb>=0?'stat-balance-pos':'stat-balance-neg'}">${tb>=0?'+':''}${formatMoney(tb)}</td></tr></tbody></table><div class="stat-summary"><span>Средний доход: <b class="clr-income">${formatMoney(ti/keys.length)}</b></span><span>Средний расход: <b class="clr-expense">${formatMoney(te/keys.length)}</b></span><span>Периодов: <b>${keys.length}</b></span></div>`; }
+    function renderReports(){ const per=document.getElementById('reportPeriod').value, c=document.getElementById('reportContent'), now=new Date(), dy=now.getFullYear(), dm=String(now.getMonth()+1).padStart(2,'0'); if(!document.getElementById('reportYear').value) document.getElementById('reportYear').value=dy; if(!document.getElementById('reportMonth').value) document.getElementById('reportMonth').value=dy+'-'+dm; const sy=parseInt(document.getElementById('reportYear').value), sm=document.getElementById('reportMonth').value; let f=[...transactions]; if(per==='years') f=f.filter(t=>new Date(t.date).getFullYear()===sy); else if(per==='months') f=f.filter(t=>t.date&&t.date.startsWith(sm)); const g={}; f.forEach(t=>{let k=per==='days'?t.date:per==='months'?(t.date?t.date.slice(0,7):''):(t.date?new Date(t.date).getFullYear().toString():'');if(!g[k])g[k]={i:0,e:0};if(t.type==='income')g[k].i+=t.amount;else g[k].e+=t.amount;}); const keys=Object.keys(g).sort((a,b)=>b.localeCompare(a)); if(keys.length===0){c.innerHTML='<div class="empty-state">Нет данных</div>';return;} let ti=0,te=0,r=''; keys.forEach(k=>{const d=g[k],b=d.i-d.e;ti+=d.i;te+=d.e;let l=per==='days'?new Date(k+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}):per==='months'?new Date(k.split('-')[0],k.split('-')[1]-1).toLocaleDateString('ru-RU',{month:'long',year:'numeric'}):k;r+=`<tr><td>${l}</td><td class="stat-income">${formatMoney(d.i)}</td><td class="stat-expense">${formatMoney(d.e)}</td><td class="${b>=0?'stat-balance-pos':'stat-balance-neg'}">${b>=0?'+':''}${formatMoney(b)}</td></tr>`;}); const tb=ti-te; c.innerHTML=`<table class="stat-table"><thead><tr><th>Период</th><th>Доходы</th><th>Расходы</th><th>Баланс</th></tr></thead><tbody>${r}<tr class="stat-total"><td>Итого</td><td class="stat-income">${formatMoney(ti)}</td><td class="stat-expense">${formatMoney(te)}</td><td class="${tb>=0?'stat-balance-pos':'stat-balance-neg'}">${tb>=0?'+':''}${formatMoney(tb)}</td></tr></tbody></table>`; }
 
     function formatMoney(n){return new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',minimumFractionDigits:0}).format(n);}
     function resolveCat(v){ if(v.startsWith('sg:')){const p=projects.find(x=>x.id===v.split(':')[1]),sg=p?p.subgroups.find(s=>s.id===v.split(':')[2]):null;return sg?sg.name:v;} if(v.startsWith('p:')){const p=projects.find(x=>x.id===v.split(':')[1]);return p?p.name:v;} return v; }
@@ -230,7 +365,7 @@
     function openProjectTransModal(pid,sgid){document.getElementById('ptProjectId').value=pid;document.getElementById('ptSubgroupId').value=sgid;document.getElementById('ptDesc').value='';document.getElementById('ptAmount').value='';document.getElementById('ptDate').valueAsDate=new Date();setPtType('expense');document.getElementById('projectTransModal').classList.add('active');document.getElementById('ptActions').style.display='flex';}
     function saveProjectTrans(){const pid=document.getElementById('ptProjectId').value,sgid=document.getElementById('ptSubgroupId').value,d=document.getElementById('ptDesc').value.trim(),a=parseFloat(document.getElementById('ptAmount').value),dt=document.getElementById('ptDate').value;if(!d||!a||a<=0)return;const p=projects.find(x=>x.id===pid),sg=p?p.subgroups.find(s=>s.id===sgid):null;if(!sg)return;sg.transactions.unshift({id:Date.now(),type:ptType,desc:d,amount:a,date:dt});saveData('projects',projects);closeModalById('projectTransModal');openProjectDetail(pid);}
     function deleteProjectTrans(pid,sgid,tid){const p=projects.find(x=>x.id===pid),sg=p?p.subgroups.find(s=>s.id===sgid):null;if(!sg)return;sg.transactions=sg.transactions.filter(t=>t.id!==tid);saveData('projects',projects);openProjectDetail(pid);}
-    function openProjectDetail(pid){ const p=projects.find(x=>x.id===pid);if(!p)return; document.getElementById('pdTitle').textContent=p.name;document.getElementById('pdSubtitle').textContent=p.description||''; const s=getPS(p);document.getElementById('pdSummary').innerHTML=`<div class="proj-stat"><div class="proj-stat-label">Расходы</div><div class="proj-stat-value clr-expense">${formatMoney(s.te)}</div></div><div class="proj-stat"><div class="proj-stat-label">Доходы</div><div class="proj-stat-value clr-income">${formatMoney(s.ti)}</div></div><div class="proj-stat"><div class="proj-stat-label">Итого</div><div class="proj-stat-value ${s.b>=0?'clr-income':'clr-expense'}">${s.b>=0?'+':''}${formatMoney(s.b)}</div></div>${p.budget>0?`<div class="proj-stat"><div class="proj-stat-label">Бюджет</div><div class="proj-stat-value">${formatMoney(p.budget)}</div></div>`:''}`; let h=`<div class="subgroup-add-row"><button class="btn-pay" type="button" onclick="closeModalById('projectDetailModal');setTimeout(()=>openSubgroupModal('${p.id}'),150)">Добавить подгруппу</button></div>`; p.subgroups.forEach(sg=>{const ss=getSS(sg),sp=sg.budget>0?(ss.e/sg.budget*100):0;h+=`<div class="subgroup-card"><div class="subgroup-header"><div><div class="subgroup-name">${sg.name}</div><div class="subgroup-stats">Расходы: <span class="clr-expense">${formatMoney(ss.e)}</span> · Доходы: <span class="clr-income">${formatMoney(ss.i)}</span> · ${ss.b>=0?'+':''}${formatMoney(ss.b)}</div></div><button class="btn-delete-debt" type="button" onclick="deleteSubgroup('${p.id}','${sg.id}')">✕</button></div>${sg.budget>0?`<div class="debt-progress" style="margin:8px 0"><div class="debt-progress-bar"><div class="debt-progress-fill ${sp>100?'clr-expense':''}" style="width:${Math.min(sp,100)}%"></div></div><div class="debt-progress-text">${sp.toFixed(0)}% бюджета</div></div>`:''}<div class="subgroup-transactions">${sg.transactions.length===0?'<div class="empty-state" style="padding:16px">Нет записей</div>':sg.transactions.map(t=>`<div class="transaction-item"><div class="transaction-info"><div class="transaction-desc">${t.desc}</div><div class="transaction-meta">${new Date(t.date).toLocaleDateString('ru-RU')}</div></div><div class="transaction-amount ${t.type}">${t.type==='income'?'+':'−'}${formatMoney(t.amount)}</div><button class="delete-btn" type="button" onclick="deleteProjectTrans('${p.id}','${sg.id}',${t.id})">✕</button></div>`).join('')}</div><div class="subgroup-actions"><button type="button" onclick="closeModalById('projectDetailModal');setTimeout(()=>openProjectTransModal('${p.id}','${sg.id}'),150)">Добавить запись</button></div></div>`;}); document.getElementById('pdSubgroups').innerHTML=h;document.getElementById('pdActions').style.display='flex';document.getElementById('projectDetailModal').classList.add('active'); }
+    function openProjectDetail(pid){ const p=projects.find(x=>x.id===pid);if(!p)return; document.getElementById('pdTitle').textContent=p.name;document.getElementById('pdSubtitle').textContent=p.description||''; const s=getPS(p);document.getElementById('pdSummary').innerHTML=`<div class="proj-stat"><div class="proj-stat-label">Расходы</div><div class="proj-stat-value clr-expense">${formatMoney(s.te)}</div></div><div class="proj-stat"><div class="proj-stat-label">Доходы</div><div class="proj-stat-value clr-income">${formatMoney(s.ti)}</div></div><div class="proj-stat"><div class="proj-stat-label">Итого</div><div class="proj-stat-value ${s.b>=0?'clr-income':'clr-expense'}">${s.b>=0?'+':''}${formatMoney(s.b)}</div></div>${p.budget>0?`<div class="proj-stat"><div class="proj-stat-label">Бюджет</div><div class="proj-stat-value">${formatMoney(p.budget)}</div></div>`:''}`; let h=`<div class="subgroup-add-row"><button class="btn-pay" type="button" onclick="closeModalById('projectDetailModal');setTimeout(()=>openSubgroupModal('${p.id}'),150)">Добавить подгруппу</button></div>`; p.subgroups.forEach(sg=>{const ss=getSS(sg),sp=sg.budget>0?(ss.e/sg.budget*100):0;h+=`<div class="subgroup-card"><div class="subgroup-header"><div><div class="subgroup-name">${sg.name}</div><div class="subgroup-stats">Расходы: <span class="clr-expense">${formatMoney(ss.e)}</span> · Доходы: <span class="clr-income">${formatMoney(ss.i)}</span> · ${ss.b>=0?'+':''}${formatMoney(ss.b)}</div></div><button class="btn-delete-debt" type="button" onclick="deleteSubgroup('${p.id}','${sg.id}')">✕</button></div>${sg.budget>0?`<div class="debt-progress" style="margin:8px 0"><div class="debt-progress-bar"><div class="debt-progress-fill ${sp>100?'clr-expense':''}" style="width:${Math.min(sp,100)}%"></div></div><div class="debt-progress-text">${sp.toFixed(0)}% бюджета</div></div>`:''}<div class="subgroup-transactions">${sg.transactions.length===0?'<div class="empty-state" style="padding:16px">Нет записей</div>':sg.transactions.map(t=>`<div class="subgroup-trans-item"><div class="subgroup-trans-info"><div class="subgroup-trans-desc">${t.desc}</div><div class="subgroup-trans-meta">${new Date(t.date).toLocaleDateString('ru-RU')}</div></div><div class="subgroup-trans-amount ${t.type}">${t.type==='income'?'+':'−'}${formatMoney(t.amount)}</div><button class="delete-btn" type="button" onclick="deleteProjectTrans('${p.id}','${sg.id}',${t.id})">✕</button></div>`).join('')}</div><button class="btn-pay" type="button" style="margin-top:8px" onclick="closeModalById('projectDetailModal');setTimeout(()=>openProjectTransModal('${p.id}','${sg.id}'),150)">+ Запись</button></div>`; }); document.getElementById('pdSubgroups').innerHTML=h; document.getElementById('pdActions').style.display='flex'; document.getElementById('projectDetailModal').classList.add('active'); }
 
     let ocrExtracted=[];
     async function processReceipt(ev){const f=ev.target.files[0];if(!f)return;document.getElementById('ocrModal').classList.add('active');document.getElementById('ocrPreview').style.display='none';document.getElementById('ocrProgress').style.display='block';document.getElementById('reviewItems').innerHTML='';document.getElementById('ocrActions').style.display='none';document.getElementById('ocrStatus').textContent='Загрузка...';document.getElementById('progressFill').style.width='0%';document.getElementById('progressText').textContent='0%';document.getElementById('ocrPreview').style.display='block';document.getElementById('ocrPreview').src=URL.createObjectURL(f);try{const r=await Tesseract.recognize(f,'rus+eng',{logger:m=>{if(m.status==='recognizing text'){const p=Math.round(m.progress*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressText').textContent=p+'%';document.getElementById('ocrStatus').textContent='Распознавание...';}}});ocrExtracted=parseReceipt(r.data.text);if(ocrExtracted.length===0){document.getElementById('ocrStatus').textContent='Не найдено.';ocrExtracted=[{desc:'',amount:'',category:'Еда'}];}document.getElementById('ocrProgress').style.display='none';document.getElementById('ocrStatus').textContent='Найдено: '+ocrExtracted.length;renderReviewItems();document.getElementById('ocrActions').style.display='flex';}catch{document.getElementById('ocrStatus').textContent='Ошибка.';document.getElementById('ocrProgress').style.display='none';}ev.target.value='';}
@@ -239,6 +374,19 @@
     function removeReviewItem(i){ocrExtracted.splice(i,1);renderReviewItems();}
     function closeModal(){document.getElementById('ocrModal').classList.remove('active');ocrExtracted=[];}
     function confirmReceipt(){const d=document.getElementById('date').value||new Date().toISOString().split('T')[0];for(const item of ocrExtracted){if(item.amount&&item.amount>0)transactions.unshift({id:Date.now()+Math.random(),type:'expense',desc:item.desc||'Чек',amount:parseFloat(item.amount),category:item.category||'Еда',date:d});}saveData('transactions',transactions);render();closeModal();}
+
+    function openForgotPassword() { document.getElementById('forgotPhone').value = document.getElementById('loginPhone').value; document.getElementById('forgotResult').style.display = 'none'; document.getElementById('forgotModal').classList.add('active'); document.getElementById('forgotActions').style.display = 'flex'; }
+    function closeForgotPassword() { closeModalById('forgotModal'); }
+    async function findUserPassword() {
+      const phone = document.getElementById('forgotPhone').value.trim();
+      const clean = sanitize(phone);
+      const res = document.getElementById('forgotResult');
+      if (clean.length < 11) { res.style.display = 'block'; res.innerHTML = '<span style="color:#d13438">Введите корректный номер</span>'; return; }
+      if (clean === ADMIN_PHONE) { res.style.display = 'block'; res.innerHTML = 'Пароль администратора: <b>' + ADMIN_PASS + '</b>'; return; }
+      const user = await dbGet('users', clean);
+      if (user && user.pass) { res.style.display = 'block'; res.innerHTML = 'Телефон: <b>' + fmtPhone(clean) + '</b><br>Пароль: <b>' + user.pass + '</b>'; }
+      else { res.style.display = 'block'; res.innerHTML = '<span style="color:#d13438">Пользователь не найден</span>'; }
+    }
 
     checkSession();
   </script>
